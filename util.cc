@@ -352,3 +352,16 @@ void average(double &av, double &error, int n, double *val, double *verr) {
   }
 
 }
+
+// ----------------------------------------------------------------------
+bool isLepton(int id) {
+  
+  if (13 == id) return true;
+  if (11 == id) return true;
+  if (15 == id) return true;
+  if (12 == id) return true;
+  if (14 == id) return true;
+  if (16 == id) return true;
+  
+  return false;
+}
