@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+# ----------------------------------------------------------------------
+# runAll -o results [-s {LQ|sgsingle|bg|...}] [-x extra args] [-d]
+#
+# ----------------------------------------------------------------------
+
+use lib "../util/perl"; # this is not nice ...
+use Tie::IxHash;
+
+use Getopt::Std;
+getopts('do:s:x:');
+
+my $dir        = "results";
+if ($opt_o) {
+    $dir = $opt_o;
+}
+
+# ----------------------------------------------------------------------
+# -- read in (and eval) configuration: 
+#      $runCommand
+#      $dfile
+#      %jobs
+open(IN, "$dir/jobs") || die "Cannot read $dir/jobs";
+while (<IN>) {
+    $gProgram .= "  ".$_; 
+}
+eval $gProgram;
+
+# ----------------------------------------------------------------------
+# -- submit the jobs
+foreach $j (keys %jobs) {
+    if ($opt_s && !($j =~ /$opt_s/)) {next;}
+    $command = "$runCommand $jobs{$j} $opt_x";
+    print "$command\n";
+    if (!$opt_d) {
+	system($command);
+    }
+}
