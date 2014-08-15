@@ -27,9 +27,9 @@ while (<IN>) {
 eval $gProgram;
 
 # -- clear old log file
-if (-e "$dir/runAll.log") {
-    unlink("$dir/runAll.log"); 
-}
+#if (-e "$dir/runAll.log") {
+#    unlink("$dir/runAll.log"); 
+#}
 
 # ----------------------------------------------------------------------
 # -- submit the jobs
