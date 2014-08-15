@@ -14,8 +14,12 @@ public:
   TH1D*  getHist(std::string name);
 
   TFile *fF; 
-  double fXsec, fFilterEff, fBf, fLumi;
   std::string fName;
+  // -- decay/process specifics
+  double fXsec, fBf, fMass, fLambda;
+  // -- generation information
+  double fFilterEff, fLumi;
+  // -- display
   int fColor, fLcolor, fFcolor, fSymbol, fFillstyle, fSize, fWidth; 
 };
 
