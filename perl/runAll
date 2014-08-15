@@ -1,8 +1,7 @@
 #!/usr/bin/perl
 
 # ----------------------------------------------------------------------
-# runAll -o results [-s {LQ|sgsingle|bg|...}] [-x extra args] [-d]
-#
+# Usage: ../util/perl/runAll -o results [-s {LQ|sgsingle|bg|...}] [-x extra args] [-d]
 # ----------------------------------------------------------------------
 
 use lib "../util/perl"; # this is not nice ...
@@ -27,11 +26,16 @@ while (<IN>) {
 }
 eval $gProgram;
 
+# -- clear old log file
+if (-e "$dir/runAll.log") {
+    unlink("$dir/runAll.log"); 
+}
+
 # ----------------------------------------------------------------------
 # -- submit the jobs
 foreach $j (keys %jobs) {
     if ($opt_s && !($j =~ /$opt_s/)) {next;}
-    $command = "$runCommand $jobs{$j} $opt_x";
+    $command = "nice $runCommand $jobs{$j} $opt_x >>$dir/runAll.log";
     print "$command\n";
     if (!$opt_d) {
 	system($command);
