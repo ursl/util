@@ -4,7 +4,6 @@
 #include <TFile.h>
 #include <TH1.h>
 
-#include "util.hh"
 
 class dataset {
 public:
@@ -20,7 +19,7 @@ public:
   // -- generation information
   double fFilterEff, fLumi;
   // -- display
-  int fColor, fLcolor, fFcolor, fSymbol, fFillstyle, fSize, fWidth; 
+  int fColor, fLcolor, fFcolor, fSymbol, fFillStyle, fSize, fWidth; 
 };
 
 #endif

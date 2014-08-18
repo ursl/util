@@ -3,6 +3,7 @@
 #include <iomanip>
 
 #include "dataset.hh"
+#include "util.hh"
 
 using namespace std;
 
@@ -11,7 +12,7 @@ dataset::dataset() {
   fF = 0; 
   fXsec = fFilterEff = fBf = fLumi = fMass = fLambda = 0.; 
   fName = "";
-  fColor = fLcolor = fFcolor = fSymbol = fFillstyle = fSize = fWidth = -1; 
+  fColor = fLcolor = fFcolor = fSymbol = fFillStyle = fSize = fWidth = -1; 
 }
 
 
@@ -22,7 +23,7 @@ TH1D*  dataset::getHist(string name) {
   if (!h) return 0; 
   setHist(h); 
   if (fColor > -1) setHist(h, fColor, fSymbol, fSize, fWidth); 
-  if (fFillstyle > -1) setFilledHist(h, fColor, fFcolor, fFillstyle, fWidth); 
+  if (fFillStyle > -1) setFilledHist(h, fColor, fFcolor, fFillStyle, fWidth); 
   return h; 
 }
 
