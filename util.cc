@@ -10,8 +10,9 @@
 #include "TString.h"
 #include "TH2.h"
 
-using std::cout;
-using std::endl;
+#include "dataset.hh"
+
+using namespace std;
 
 // ----------------------------------------------------------------------
 void setMaximum(double scale, TH1 *h1, TH1 *h2) {
@@ -23,7 +24,6 @@ void setMaximum(double scale, TH1 *h1, TH1 *h2) {
   if (0 != h1) h1->SetMaximum(scale*m); 
   if (0 != h2) h2->SetMaximum(scale*m); 
 }
-
 
 // ----------------------------------------------------------------------
 void setTitles(TH1 *h, const char *sx, const char *sy, float size, 
@@ -48,6 +48,13 @@ void setHist(TH1 *h, Int_t color, Int_t symbol, Double_t size, Double_t width) {
   h->SetStats(kFALSE); 
   h->SetFillStyle(0); h->SetFillColor(color);
 }
+
+// ----------------------------------------------------------------------
+void setHist(TH1 *h, dataset *ds) {
+  if (ds->fColor > -1) setHist(h, ds->fColor, ds->fSymbol, ds->fSize, ds->fWidth); 
+  if (ds->fFillStyle > -1) setFilledHist(h, ds->fColor, ds->fFcolor, ds->fFillStyle, ds->fWidth); 
+}
+
 
 // ----------------------------------------------------------------------
 void setGraph(TGraph *h, Int_t color, Int_t symbol, Double_t size, Double_t width) {
@@ -367,3 +374,14 @@ bool isLepton(int id) {
   
   return false;
 }
+
+// ----------------------------------------------------------------------
+void replaceAll(string &str, const string &from, const string &to) {
+  if (from.empty()) return;
+  size_t start_pos = 0;
+  while((start_pos = str.find(from, start_pos)) != string::npos) {
+    str.replace(start_pos, from.length(), to);
+    start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+  }
+}
+

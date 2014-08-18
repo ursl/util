@@ -1,6 +1,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <string>
 
 #include "TH1.h"
 #include "TCanvas.h"
@@ -11,8 +12,16 @@
 #include "TColor.h"
 #include "TFile.h"
 
+class dataset;
+
+
 // ======================================================================
-// General utilities
+// string utilities
+// ======================================================================
+void replaceAll(std::string &s, const std::string &from, const std::string &to);
+
+// ======================================================================
+// ROOT General utilities
 // ======================================================================
 void printNonZero(TH1*); 
 void stampAndSave(TCanvas *fC, const char *s = "bla.eps");
@@ -23,7 +32,7 @@ int  wait();
 void colors(int choice = 0);
 
 // ======================================================================
-// Utitilities for displays and typing shortcuts
+// ROOT Utitilities for displays and typing shortcuts
 // ====================================================================== 
 // -- Histograms
 void setTitles(TH1 *h, const char *sx, const char *sy, 
@@ -32,6 +41,8 @@ void setHist(TH1 *h, int color = kBlack, int symbol = 20, double size = 1., doub
 void setGraph(TGraph *g, int color = kBlack, int symbol = 20, double size = 1., double width = 2.);
 void setFilledHist(TH1 *h, int lcol = kBlack, int fcol = kYellow, int fstyle = 1000, int width = 1);
 void setMaximum(double scale = 1.2, TH1 *h1 = 0, TH1 *h2 = 0);
+
+void setHist(TH1 *h, dataset *ds);
 
 // ======================================================================
 // Utitilities for calculations
