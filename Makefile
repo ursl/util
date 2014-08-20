@@ -26,9 +26,12 @@ $(addprefix obj/,%.o) : %.cc
 
 # -- Source code
 UTIL = util.o \
-       dataset.o
+       dataset.o \
+       hpl.o \
+       PidData.o PidTable.o
 
-DICTFILES = ${FSXUTIL:.o=Dict.o}
+DICTFILES   = ${UTIL:.o=Dict.o}
+DICTHEADERS = ${DICTFILES:.o=.h}
 
 # ================================================================================
 util: dir $(addprefix obj/,$(UTIL) $(DICTFILES))
@@ -42,5 +45,6 @@ dir:
 
 clean:
 	rm -f $(addprefix obj/,$(UTIL) $(DICTFILES))
+	rm -f $(DICTHEADERS)
 	rm -f lib/libutil.so
 
