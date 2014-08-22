@@ -27,6 +27,7 @@ $(addprefix obj/,%.o) : %.cc
 # -- Source code
 UTIL = util.o \
        dataset.o \
+       selpoint.o \
        hpl.o \
        PidData.o PidTable.o
 
