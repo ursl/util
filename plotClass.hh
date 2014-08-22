@@ -49,8 +49,8 @@ public :
   // -- overlays and normalizing histograms
   void           normHist(TH1 *, std::string ds="", int method = NONORM); 
   virtual void   overlayAll();
-  virtual void   overlay(TH1* h1, std::string f1, TH1 *h2, std::string f2, bool legend = true);
-  virtual void   overlay(std::string f1, std::string h1name, std::string f2, std::string h2name, bool legend = true);
+  void           overlay(TH1* h1, std::string f1, TH1 *h2, std::string f2, bool legend = true);
+  void           overlay(std::string h1name, std::string f1, std::string h2name, std::string f2, bool legend = true);
 
   virtual void   bookHist(std::string name); 
 
