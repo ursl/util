@@ -57,6 +57,14 @@ void setHist(TH1 *h, dataset *ds) {
 
 
 // ----------------------------------------------------------------------
+void setHistTitles(TH1 *h, dataset *ds, const char *sx, const char *sy, 
+		   float size, float xoff, float yoff, float lsize, int font) {
+  setHist(h, ds); 
+  setTitles(h, sx, sy, size, xoff, yoff, lsize, font); 
+  
+}
+
+// ----------------------------------------------------------------------
 void setGraph(TGraph *h, Int_t color, Int_t symbol, Double_t size, Double_t width) {
   h->SetLineColor(color);   h->SetLineWidth(width);
   h->SetMarkerColor(color); h->SetMarkerStyle(symbol);  h->SetMarkerSize(size); 

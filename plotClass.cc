@@ -120,11 +120,10 @@ void plotClass::overlayAll() {
 }
 
 // ----------------------------------------------------------------------
-void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, bool legend) {
-  bool log(true); 
+void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, int method, bool log, bool legend) {
 
-  normHist(h1, f1, LUMI); 
-  normHist(h2, f2, LUMI); 
+  normHist(h1, f1, method); 
+  normHist(h2, f2, method); 
 
   double hmax(1.2*h1->GetMaximum()); 
   if (h2->GetMaximum() > hmax) hmax = 1.2*h2->GetMaximum(); 
@@ -159,10 +158,10 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, bool legend) {
 }
 
 // ----------------------------------------------------------------------
-void plotClass::overlay(string h1name, string f1, string h2name, string f2, bool legend) {
+void plotClass::overlay(string h1name, string f1, string h2name, string f2, int method, bool log, bool legend) {
   TH1D *h1 = fDS[f1]->getHist(Form("%s", h1name.c_str())); 
   TH1D *h2 = fDS[f2]->getHist(Form("%s", h2name.c_str())); 
-  overlay(h1, f1, h2, f2, legend); 
+  overlay(h1, f1, h2, f2, method, log, legend); 
 }
 
 
