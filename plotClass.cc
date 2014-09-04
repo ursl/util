@@ -131,6 +131,8 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, int method, bool
     gPad->SetLogy(1); 
     hmax *= 2.;
     h1->SetMinimum(0.5); 
+  } else {
+    h1->SetMinimum(0.); 
   }
   h1->SetMaximum(hmax); 
 
