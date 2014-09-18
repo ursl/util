@@ -19,7 +19,8 @@ public:
   // -- generation information
   double fFilterEff, fLumi;
   // -- display
-  int fColor, fLcolor, fFcolor, fSymbol, fFillStyle, fSize, fWidth; 
+  int fColor, fLcolor, fFcolor, fSymbol, fFillStyle; 
+  double fSize, fWidth; 
 };
 
 #endif

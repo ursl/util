@@ -136,7 +136,7 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, int method, bool
   }
   h1->SetMaximum(hmax); 
 
-  h1->DrawCopy("e"); 
+  h1->DrawCopy("hist"); 
   h2->DrawCopy("histsame");
   cout << "==> plotClass: overlay(" << f1 << ", " << h1->GetName() << " integral= " << h1->Integral()
        << ", " << f2 << ", " << h2->GetName() << " integral= " << h2->Integral()
@@ -231,9 +231,13 @@ void plotClass::setupTree(TTree *t) {
 }
 
 // ----------------------------------------------------------------------
-TTree* plotClass::getTree(string ds) {
+TTree* plotClass::getTree(string ds, string dir) {
   TTree *t(0);
-  t = (TTree*)fDS[ds]->fF->Get("events"); 
+  if (!dir.compare("")) {
+    t = (TTree*)fDS[ds]->fF->Get("events"); 
+  } else {
+    t = (TTree*)fDS[ds]->fF->Get(Form("%s/events", dir.c_str())); 
+  }
   return t; 
 }
 

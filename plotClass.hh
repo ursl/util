@@ -56,7 +56,7 @@ public :
 
   virtual void   bookHist(std::string name); 
 
-  TTree*         getTree(std::string ds); 
+  TTree*         getTree(std::string ds, std::string dir = ""); 
   virtual void   setupTree(TTree *t); 
   virtual void   loopOverTree(TTree *t, int ifunc, int nevts = -1, int nstart = 0); 
   virtual void   loopFunction1(); 
