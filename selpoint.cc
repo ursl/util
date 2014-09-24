@@ -7,8 +7,8 @@ selpoint::selpoint() {
   fSmallerThan = vector<pair<double *, double> >();
   fLargerThan = vector<pair<double *, double> >();
   
-  fSgCnt = 0; 
-  fBgCnt = 0; 
+  fSgCnt = 0.; 
+  fBgCnt = 0.; 
 
 }
 
@@ -20,7 +20,7 @@ selpoint::~selpoint() {
 }
 
 // ----------------------------------------------------------------------
-void selpoint::eval(bool sg) {
+void selpoint::eval(bool sg, double w8) {
   
   bool OK(true);
   for (unsigned int i = 0; i < fSmallerThan.size(); ++i) {
@@ -38,8 +38,8 @@ void selpoint::eval(bool sg) {
   }
   
   if (sg) {
-    fSgCnt += 1; 
+    fSgCnt += w8; 
   } else {
-    fBgCnt += 1; 
+    fBgCnt += w8; 
   }
 }

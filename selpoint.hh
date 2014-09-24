@@ -8,9 +8,9 @@ public:
   selpoint();
   ~selpoint();
 
-  void eval(bool sg = true); 
+  void eval(bool sg = true, double w8 = 1.); 
 
-  int fSgCnt, fBgCnt; 
+  double fSgCnt, fBgCnt; 
 
   std::vector<std::pair<double *, double> > fSmallerThan;  // <variable pointer, cut value>
   std::vector<std::pair<double *, double> > fLargerThan;  // <variable pointer, cut value>
