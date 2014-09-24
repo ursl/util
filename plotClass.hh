@@ -49,9 +49,16 @@ public :
   // -- overlays and normalizing histograms
   void           normHist(TH1 *, std::string ds="", int method = NONORM); 
   virtual void   overlayAll();
+  // -- overlay 2
   void           overlay(TH1* h1, std::string f1, TH1 *h2, std::string f2, 
 			 int method = NONORM, bool log = false, bool legend = true);
   void           overlay(std::string h1name, std::string f1, std::string h2name, std::string f2, 
+			 int method = NONORM, bool log = false, bool legend = true);
+
+  // -- overlay 3
+  void           overlay(TH1* h1, std::string f1, TH1 *h2, std::string f2, TH1* h3, std::string f3, 
+			 int method = NONORM, bool log = false, bool legend = true);
+  void           overlay(std::string h1name, std::string f1, std::string h2name, std::string f2, std::string h3name, std::string f3, 
 			 int method = NONORM, bool log = false, bool legend = true);
 
   virtual void   bookHist(std::string name); 
@@ -62,7 +69,7 @@ public :
   virtual void   loopFunction1(); 
   virtual void   loopFunction2(); 
 
-  void           cd(std::string dataset) {fDS[dataset]->cd("");}
+  void           cd(std::string dataset, std::string dir = "") {fDS[dataset]->cd(dir.c_str());}
   void           replaceAll(std::string &sInput, const std::string &oldString, const std::string &newString);
   void           newLegend(double x1, double y1, double x2, double y2, std::string title = "");
   void           makeCanvas(int i = 3);

@@ -166,6 +166,61 @@ void plotClass::overlay(string h1name, string f1, string h2name, string f2, int 
   overlay(h1, f1, h2, f2, method, log, legend); 
 }
 
+// ----------------------------------------------------------------------
+void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, TH1* h3, string f3, int method, bool log, bool legend) {
+
+  normHist(h1, f1, method); 
+  normHist(h2, f2, method); 
+  normHist(h3, f3, method); 
+
+  double hmax(1.2*h1->GetMaximum()); 
+  if (h2->GetMaximum() > hmax) hmax = 1.2*h2->GetMaximum(); 
+  if (h3->GetMaximum() > hmax) hmax = 1.2*h3->GetMaximum(); 
+  if (log) {
+    gPad->SetLogy(1); 
+    hmax *= 2.;
+    h1->SetMinimum(0.5); 
+  } else {
+    h1->SetMinimum(0.); 
+  }
+  h1->SetMaximum(hmax); 
+
+  h1->DrawCopy("hist"); 
+  h2->DrawCopy("histsame");
+  h3->DrawCopy("histsame");
+  cout << "==> plotClass: overlay(" << f1 << ", " << h1->GetName() << " integral= " << h1->Integral()
+       << ", " << f2 << ", " << h2->GetName() << " integral= " << h2->Integral()
+       << ", " << f3 << ", " << h3->GetName() << " integral= " << h3->Integral()
+       << ") legend = " << legend << " log: " << log 
+       << endl;
+  
+  if (legend) {
+    newLegend(0.40, 0.75, 0.7, 0.85); 
+    legg->AddEntry(h1, fDS[f1]->fName.c_str(), "p"); 
+    legg->AddEntry(h2, fDS[f2]->fName.c_str(), "l"); 
+    legg->AddEntry(h3, fDS[f3]->fName.c_str(), "l"); 
+    legg->Draw();
+    if (fDBX) {
+      tl->SetNDC(kTRUE);
+      tl->SetTextSize(0.02);
+      tl->SetTextColor(fDS[f1]->fColor); 
+      tl->DrawLatex(0.90, 0.88, Form("%.1e", h1->Integral())); 
+      tl->SetTextColor(fDS[f2]->fColor); 
+      tl->DrawLatex(0.90, 0.82, Form("%.1e", h2->Integral())); 
+      tl->SetTextColor(fDS[f3]->fColor); 
+      tl->DrawLatex(0.90, 0.76, Form("%.1e", h3->Integral())); 
+    }
+  }
+}
+
+// ----------------------------------------------------------------------
+void plotClass::overlay(string h1name, string f1, string h2name, string f2, string h3name, string f3, int method, bool log, bool legend) {
+  TH1D *h1 = fDS[f1]->getHist(Form("%s", h1name.c_str())); 
+  TH1D *h2 = fDS[f2]->getHist(Form("%s", h2name.c_str())); 
+  TH1D *h3 = fDS[f3]->getHist(Form("%s", h3name.c_str())); 
+  overlay(h1, f1, h2, f2, h3, f3, method, log, legend); 
+}
+
 
 // ----------------------------------------------------------------------
 void plotClass::loopFunction1() {
