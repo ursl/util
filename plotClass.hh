@@ -69,7 +69,7 @@ public :
   virtual void   loopFunction1(); 
   virtual void   loopFunction2(); 
 
-  void           cd(std::string dataset, std::string dir = "") {fDS[dataset]->cd(dir.c_str());}
+  void           cd(std::string dataset, std::string dir = "");
   void           replaceAll(std::string &sInput, const std::string &oldString, const std::string &newString);
   void           newLegend(double x1, double y1, double x2, double y2, std::string title = "");
   void           makeCanvas(int i = 3);

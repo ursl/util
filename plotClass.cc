@@ -61,6 +61,15 @@ void plotClass::closeHistFile() {
 }
 
 // ----------------------------------------------------------------------
+void plotClass::cd(std::string dataset, std::string dir) {
+  if (0 == fDS.count(dataset)) {
+    cout << "unknown dataset: " << dataset << endl;
+  } else {
+    fDS[dataset]->cd(dir.c_str());
+  }
+}
+
+// ----------------------------------------------------------------------
 void plotClass::bookHist(string name) {
   cout << "==> plotClass: bookHist " << name << endl;
 }
@@ -78,32 +87,41 @@ void plotClass::treeAnalysis() {
 // ----------------------------------------------------------------------
 void plotClass::normHist(TH1 *h, string ds, int method) {
   double scale(1.); 
+  string smethod("");
   // -- normalize to 1
   if (method == UNITY) {
+    smethod = "unity"; 
     scale = (h->Integral() > 0 ? 1./h->Integral() : 1.); 
     setTitles(h, h->GetXaxis()->GetTitle(), "normalized to 1");
   } else if (method == SOMETHING) {
+    smethod = "something"; 
     scale = fNorm * (h->Integral() > 0 ? fNorm/h->Integral() : 1.); 
     setTitles(h, h->GetXaxis()->GetTitle(), "weighted events");
   } else if (method == XSECTION) {
-    // -- normalize to xsec*bf
+    smethod = "xsection"; 
+    // -- normalize to EFFECTIVE xsec*bf (EFFECTIVE to account for cuts)
+    //    the cross section is known for ds
+    //    ds corresponds to know lumi
+    //    
     //    n = xsec * L
-    //    "integral" over histogram should be xsec
+    //    "integral" over histogram should be EFFECTIVE xsec
     scale = (h->Integral() > 0 ? fDS[ds]->fXsec*fDS[ds]->fBf/h->Integral() : 1.); 
     setTitles(h, h->GetXaxis()->GetTitle(), "pb");
   } else if (method == LUMI) {
+    smethod = "lumi"; 
     // -- normalize to xsec*bf
     //    n = xsec * L
     //    "integral" over histogram should be events expected in fLumi
     scale = (h->Integral() > 0 ? fLumi/fDS[ds]->fLumi : 1.); 
     setTitles(h, h->GetXaxis()->GetTitle(), Form("events in %4.0f/fb", fLumi));
   } else if (method == NONORM) {
+    smethod = "nonorm"; 
     scale = 1.;
   } else {
     scale = 1.;
   }
 
-  cout << "==>plotClass:  normHist scaling by " << scale << ", based on method " << method << endl;
+  cout << "==>plotClass:  normHist scaling by " << scale << ", based on method " << smethod << endl;
 
   double c(0.), e(0.); 
   for (int i = 0; i <= h->GetNbinsX(); ++i) {
@@ -130,7 +148,7 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, int method, bool
   if (log) {
     gPad->SetLogy(1); 
     hmax *= 2.;
-    h1->SetMinimum(0.5); 
+    h1->SetMinimum(0.1*h1->GetMinimum(1.e-6));
   } else {
     h1->SetMinimum(0.); 
   }
@@ -150,7 +168,7 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, int method, bool
     legg->Draw();
     if (fDBX) {
       tl->SetNDC(kTRUE);
-      tl->SetTextSize(0.02);
+      tl->SetTextSize(0.03);
       tl->SetTextColor(fDS[f1]->fColor); 
       tl->DrawLatex(0.90, 0.88, Form("%.1e", h1->Integral())); 
       tl->SetTextColor(fDS[f2]->fColor); 
