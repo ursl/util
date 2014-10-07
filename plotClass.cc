@@ -168,7 +168,7 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, int method, bool
     legg->Draw();
     if (fDBX) {
       tl->SetNDC(kTRUE);
-      tl->SetTextSize(0.03);
+      tl->SetTextSize(0.05);
       tl->SetTextColor(fDS[f1]->fColor); 
       tl->DrawLatex(0.90, 0.88, Form("%.1e", h1->Integral())); 
       tl->SetTextColor(fDS[f2]->fColor); 
@@ -190,14 +190,25 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, TH1* h3, string 
   normHist(h1, f1, method); 
   normHist(h2, f2, method); 
   normHist(h3, f3, method); 
-
+  double ymin(0.0001);
   double hmax(1.2*h1->GetMaximum()); 
   if (h2->GetMaximum() > hmax) hmax = 1.2*h2->GetMaximum(); 
   if (h3->GetMaximum() > hmax) hmax = 1.2*h3->GetMaximum(); 
   if (log) {
     gPad->SetLogy(1); 
     hmax *= 2.;
-    h1->SetMinimum(0.5); 
+    double hmin(h1->GetMinimum(ymin)); 
+    cout << "hmin1 = " << hmin << endl;
+    if (h2->GetMinimum(ymin) < hmin) {
+      hmin = h2->GetMinimum(ymin);
+      cout << "hmin2 = " << hmin << endl;
+    }
+    if (h3->GetMinimum(ymin) < hmin) {
+      hmin = h3->GetMinimum(ymin);
+      cout << "hmin3 = " << hmin << endl;
+    }
+    h1->SetMinimum(0.1*hmin); 
+    cout << "hmin = " << hmin << endl;
   } else {
     h1->SetMinimum(0.); 
   }
@@ -220,13 +231,13 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, TH1* h3, string 
     legg->Draw();
     if (fDBX) {
       tl->SetNDC(kTRUE);
-      tl->SetTextSize(0.02);
+      tl->SetTextSize(0.05);
       tl->SetTextColor(fDS[f1]->fColor); 
-      tl->DrawLatex(0.90, 0.88, Form("%.1e", h1->Integral())); 
+      tl->DrawLatex(0.75, 0.86, Form("%.1e", h1->Integral())); 
       tl->SetTextColor(fDS[f2]->fColor); 
-      tl->DrawLatex(0.90, 0.82, Form("%.1e", h2->Integral())); 
+      tl->DrawLatex(0.75, 0.81, Form("%.1e", h2->Integral())); 
       tl->SetTextColor(fDS[f3]->fColor); 
-      tl->DrawLatex(0.90, 0.76, Form("%.1e", h3->Integral())); 
+      tl->DrawLatex(0.75, 0.76, Form("%.1e", h3->Integral())); 
     }
   }
 }
