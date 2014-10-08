@@ -74,6 +74,10 @@ public :
   void           newLegend(double x1, double y1, double x2, double y2, std::string title = "");
   void           makeCanvas(int i = 3);
 
+
+  // -- histograms
+  std::map<std::string, TH1*> fHists;
+
 protected:
 
   TFile *fHistFile; 
@@ -96,8 +100,6 @@ protected:
   std::map<std::string, dataset*> fDS; 
   // -- current dataset for analysis
   std::string fCds; 
-  // -- histograms
-  std::map<std::string, TH1*> fHists;
 
   // -- Display utilities
   int fFont; 
