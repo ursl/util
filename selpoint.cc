@@ -1,3 +1,4 @@
+#include <iostream>
 #include "selpoint.hh"
 
 using namespace std;
@@ -7,8 +8,9 @@ selpoint::selpoint() {
   fSmallerThan = vector<pair<double *, double> >();
   fLargerThan = vector<pair<double *, double> >();
   
-  fSgCnt = 0.; 
-  fBgCnt = 0.; 
+  for (int icat = 0; icat < 10; ++icat) {
+    fCnt[icat] = 0; 
+  }
 
 }
 
@@ -20,7 +22,7 @@ selpoint::~selpoint() {
 }
 
 // ----------------------------------------------------------------------
-void selpoint::eval(bool sg, double w8) {
+void selpoint::eval(int cat, double w8) {
   
   bool OK(true);
   for (unsigned int i = 0; i < fSmallerThan.size(); ++i) {
@@ -37,9 +39,10 @@ void selpoint::eval(bool sg, double w8) {
     }
   }
   
-  if (sg) {
-    fSgCnt += w8; 
+  if (cat > -1 && cat < 10) {
+    fCnt[cat] += w8;
   } else {
-    fBgCnt += w8; 
-  }
+    cout << "selpoint: invalid cat " << cat << endl;
+  }    
+
 }
