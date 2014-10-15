@@ -54,10 +54,7 @@ plotClass::~plotClass() {
 // ----------------------------------------------------------------------
 // see http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=15054
 void plotClass::closeHistFile() {
-  fHistFile->cd();
   fHistFile->Write(); 
-  fHistFile->Close(); 
-
 }
 
 // ----------------------------------------------------------------------
@@ -224,21 +221,21 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, TH1* h3, string 
        << endl;
   
   if (legend) {
-    newLegend(0.40, 0.75, 0.65, 0.85); 
-    legg->AddEntry(h1, fDS[f1]->fName.c_str(), "p"); 
-    legg->AddEntry(h2, fDS[f2]->fName.c_str(), "l"); 
-    legg->AddEntry(h3, fDS[f3]->fName.c_str(), "l"); 
+    newLegend(0.40, 0.70, 0.65, 0.85); 
+    legg->AddEntry(h1, fDS[f1]->fName.c_str(), "f"); 
+    legg->AddEntry(h2, fDS[f2]->fName.c_str(), "f"); 
+    legg->AddEntry(h3, fDS[f3]->fName.c_str(), "f"); 
     legg->Draw();
-    if (fDBX) {
-      tl->SetNDC(kTRUE);
-      tl->SetTextSize(0.05);
-      tl->SetTextColor(fDS[f1]->fColor); 
-      tl->DrawLatex(0.70, 0.86, Form("%.1e", h1->Integral())); 
-      tl->SetTextColor(fDS[f2]->fColor); 
-      tl->DrawLatex(0.70, 0.81, Form("%.1e", h2->Integral())); 
-      tl->SetTextColor(fDS[f3]->fColor); 
-      tl->DrawLatex(0.70, 0.76, Form("%.1e", h3->Integral())); 
-    }
+  }
+  if (fDBX) {
+    tl->SetNDC(kTRUE);
+    tl->SetTextSize(0.05);
+    tl->SetTextColor(fDS[f1]->fColor); 
+    tl->DrawLatex(0.15, 0.92, Form("%.1e", h1->Integral())); 
+    tl->SetTextColor(fDS[f2]->fColor); 
+    tl->DrawLatex(0.40, 0.92, Form("%.1e", h2->Integral())); 
+    tl->SetTextColor(fDS[f3]->fColor); 
+    tl->DrawLatex(0.65, 0.92, Form("%.1e", h3->Integral())); 
   }
 }
 
