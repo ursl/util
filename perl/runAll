@@ -8,7 +8,7 @@ use lib "../util/perl"; # this is not nice ...
 use Tie::IxHash;
 
 use Getopt::Std;
-getopts('do:s:x:');
+getopts('dlo:s:x:');
 
 my $dir        = "results";
 if ($opt_o) {
@@ -35,9 +35,32 @@ eval $gProgram;
 # -- submit the jobs
 foreach $j (keys %jobs) {
     if ($opt_s && !($j =~ /$opt_s/)) {next;}
-    $command = "nice $runCommand $jobs{$j} $opt_x >>$dir/runAll.log";
+    if ($opt_l) {
+	$command = "nice $runCommand $jobs{$j} $opt_x >>$dir/runAll.log";
+    } else {
+	&createCondorScript($j); 
+	$command = "export JOB='$runCommand $jobs{$j} $opt_x'; export LOG=$j; condor_submit condor-$j.txt";
+    }
     print "$command\n";
     if (!$opt_d) {
 	system($command);
+	unlink("condor-$j.txt");
     }
+}
+
+
+# ----------------------------------------------------------------------
+sub createCondorScript {
+    ($log) = @_;
+    open(OUT, ">condor-$j.txt")  || die "Cannot open condor-$j.txt\n";
+    print OUT <<"EOF";
+executable  =  condorRunLq
+universe    =  vanilla
+log         =  /STORE/LQ/ursl/$j.condor
+output      =  /STORE/LQ/ursl/$j.log
+initialdir  =  /users/ursl/lq/lq0
+getenv      =  True
+queue
+EOF
+close OUT;
 }
