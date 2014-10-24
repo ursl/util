@@ -92,5 +92,6 @@ double getErrorRange(TH1*, int = -1, int = -1);
 // Utilities for analysis
 // ======================================================================
 bool isLepton(int id); 
+bool isQuark(int id); 
 
 #endif

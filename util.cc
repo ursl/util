@@ -369,17 +369,26 @@ void average(double &av, double &error, int n, double *val, double *verr) {
 }
 
 // ----------------------------------------------------------------------
-bool isLepton(int id) {
-
+bool isQuark(int id) {
   unsigned int aid = TMath::Abs(id); 
+  if (1 == aid) return true;
+  if (2 == aid) return true;
+  if (3 == aid) return true;
+  if (4 == aid) return true;
+  if (5 == aid) return true;
+  if (6 == aid) return true;
+  return false;
+}
 
+// ----------------------------------------------------------------------
+bool isLepton(int id) {
+  unsigned int aid = TMath::Abs(id); 
   if (13 == aid) return true;
   if (11 == aid) return true;
   if (15 == aid) return true;
   if (12 == aid) return true;
   if (14 == aid) return true;
   if (16 == aid) return true;
-  
   return false;
 }
 
