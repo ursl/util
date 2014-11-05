@@ -36,18 +36,23 @@ eval $gProgram;
 foreach $j (keys %jobs) {
     if ($opt_s && !($j =~ /$opt_s/)) {next;}
     if ($opt_l) {
+	$jobs{$j} =~ s/\|\& tee/>/g;
 	$command = "nice $runCommand $jobs{$j} $opt_x >>$dir/runAll.log";
+	$command = "nice $runCommand $jobs{$j} $opt_x";
+	print "$command\n";
+	if (!$opt_d) {
+	    system($command);
+	}
     } else {
 	&createCondorScript($j); 
 	$command = "export JOB='$runCommand $jobs{$j} $opt_x'; export LOG=$j; condor_submit condor-$j.txt";
-    }
-    print "$command\n";
-    if (!$opt_d) {
-	system($command);
-	unlink("condor-$j.txt");
+	print "$command\n";
+	if (!$opt_d) {
+	    system($command);
+	    unlink("condor-$j.txt");
+	}
     }
 }
-
 
 # ----------------------------------------------------------------------
 sub createCondorScript {
