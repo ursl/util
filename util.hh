@@ -31,6 +31,8 @@ void zone(int x = 1, int y = 1, TCanvas *c = 0);
 int  wait();
 void colors(int choice = 0);
 
+std::string formatTex(double n, std::string name, int digits, int sgn = 0);
+
 // ======================================================================
 // ROOT Utitilities for displays and typing shortcuts
 // ====================================================================== 
