@@ -8,7 +8,7 @@ use lib "../util/perl"; # this is not nice ...
 use Tie::IxHash;
 
 use Getopt::Std;
-getopts('dlo:s:x:');
+getopts('cdlo:s:x:');
 
 my $dir        = "results";
 if ($opt_o) {
@@ -35,6 +35,18 @@ eval $gProgram;
 # -- submit the jobs
 foreach $j (keys %jobs) {
     if ($opt_s && !($j =~ /$opt_s/)) {next;}
+    if ($opt_c) {
+	$jobs{$j} =~/-o (.*)\s-/; $rootfile = $1;  
+	if (-e $rootfile) {
+	    $size = -s $rootfile;
+	    print "$rootfile with size $size exists already, do not resubmit \n";
+	    if ($size > 1000) {
+		next;
+	    }
+	} else {
+	    # do nothing and proceed with submission
+	}
+    }
     if ($opt_l) {
 	$jobs{$j} =~ s/\|\& tee/>/g;
 	$command = "nice $runCommand $jobs{$j} $opt_x >>$dir/runAll.log";
