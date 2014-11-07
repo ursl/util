@@ -80,7 +80,11 @@ public :
 
 protected:
 
-  TFile *fHistFile; 
+  std::string fTexFileName; 
+  ofstream fTEX; 
+
+  std::string fHistFileName; 
+  TFile      *fHistFile; 
 
   enum HistNorm {NONORM,     // do not touch the normalization
 		 SOMETHING,  // normalize to what is given in fNorm

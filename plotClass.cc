@@ -26,6 +26,7 @@ plotClass::plotClass(string dir,  string files, string setup) {
   fVerbose = true;
 
   fDirectory = dir; 
+  fSetup = setup;
 
   delete gRandom;
   gRandom = (TRandom*) new TRandom3;
