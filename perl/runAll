@@ -36,7 +36,7 @@ eval $gProgram;
 foreach $j (keys %jobs) {
     if ($opt_s && !($j =~ /$opt_s/)) {next;}
     if ($opt_c) {
-	$jobs{$j} =~/-o (.*)\s-/; $rootfile = $1;  
+	$jobs{$j} =~/-o\s*(.*)\s-/; $rootfile = $1;  
 	if (-e $rootfile) {
 	    $size = -s $rootfile;
 	    print "$rootfile with size $size exists already, do not resubmit \n";
@@ -44,6 +44,7 @@ foreach $j (keys %jobs) {
 		next;
 	    }
 	} else {
+	    print "->$rootfile<- not found\n";
 	    # do nothing and proceed with submission
 	}
     }
