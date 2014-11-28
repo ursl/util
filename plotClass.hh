@@ -51,15 +51,15 @@ public :
   virtual void   overlayAll();
   // -- overlay 2
   void           overlay(TH1* h1, std::string f1, TH1 *h2, std::string f2, 
-			 int method = NONORM, bool log = false, bool legend = true);
+			 int method = NONORM, bool log = false, bool legend = true, double xleg = 0.4, double yleg = 0.6);
   void           overlay(std::string h1name, std::string f1, std::string h2name, std::string f2, 
-			 int method = NONORM, bool log = false, bool legend = true);
+			 int method = NONORM, bool log = false, bool legend = true, double xleg = 0.4, double yleg = 0.6);
 
   // -- overlay 3
   void           overlay(TH1* h1, std::string f1, TH1 *h2, std::string f2, TH1* h3, std::string f3, 
-			 int method = NONORM, bool log = false, bool legend = true);
+			 int method = NONORM, bool log = false, bool legend = true, double xleg = 0.4, double yleg = 0.6);
   void           overlay(std::string h1name, std::string f1, std::string h2name, std::string f2, std::string h3name, std::string f3, 
-			 int method = NONORM, bool log = false, bool legend = true);
+			 int method = NONORM, bool log = false, bool legend = true, double xleg = 0.4, double yleg = 0.6);
 
   virtual void   bookHist(std::string name); 
 

@@ -136,7 +136,7 @@ void plotClass::overlayAll() {
 }
 
 // ----------------------------------------------------------------------
-void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, int method, bool log, bool legend) {
+void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, int method, bool log, bool legend, double xleg, double yleg) {
 
   normHist(h1, f1, method); 
   normHist(h2, f2, method); 
@@ -160,30 +160,31 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, int method, bool
        << endl;
   
   if (legend) {
-    newLegend(0.40, 0.75, 0.7, 0.85); 
-    legg->AddEntry(h1, fDS[f1]->fName.c_str(), "p"); 
-    legg->AddEntry(h2, fDS[f2]->fName.c_str(), "l"); 
+    newLegend(xleg, yleg, xleg+0.25, yleg+0.10); 
+    legg->SetTextSize(0.03);
+    legg->AddEntry(h1, fDS[f1]->fName.c_str(), "f"); 
+    legg->AddEntry(h2, fDS[f2]->fName.c_str(), "f"); 
     legg->Draw();
     if (fDBX) {
       tl->SetNDC(kTRUE);
       tl->SetTextSize(0.05);
       tl->SetTextColor(fDS[f1]->fColor); 
-      tl->DrawLatex(0.90, 0.88, Form("%.1e", h1->Integral())); 
+      tl->DrawLatex(0.15, 0.92, Form("%.2e", h1->Integral())); 
       tl->SetTextColor(fDS[f2]->fColor); 
-      tl->DrawLatex(0.90, 0.82, Form("%.1e", h2->Integral())); 
+      tl->DrawLatex(0.40, 0.92, Form("%.2e", h2->Integral())); 
     }
   }
 }
 
 // ----------------------------------------------------------------------
-void plotClass::overlay(string h1name, string f1, string h2name, string f2, int method, bool log, bool legend) {
+void plotClass::overlay(string h1name, string f1, string h2name, string f2, int method, bool log, bool legend, double xleg, double yleg) {
   TH1D *h1 = fDS[f1]->getHist(Form("%s", h1name.c_str())); 
   TH1D *h2 = fDS[f2]->getHist(Form("%s", h2name.c_str())); 
   overlay(h1, f1, h2, f2, method, log, legend); 
 }
 
 // ----------------------------------------------------------------------
-void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, TH1* h3, string f3, int method, bool log, bool legend) {
+void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, TH1* h3, string f3, int method, bool log, bool legend, double xleg, double yleg) {
 
   normHist(h1, f1, method); 
   normHist(h2, f2, method); 
@@ -222,7 +223,8 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, TH1* h3, string 
        << endl;
   
   if (legend) {
-    newLegend(0.40, 0.70, 0.65, 0.85); 
+    newLegend(xleg, yleg, xleg+0.25, yleg+0.15); 
+    legg->SetTextSize(0.03);
     legg->AddEntry(h1, fDS[f1]->fName.c_str(), "f"); 
     legg->AddEntry(h2, fDS[f2]->fName.c_str(), "f"); 
     legg->AddEntry(h3, fDS[f3]->fName.c_str(), "f"); 
@@ -232,16 +234,17 @@ void plotClass::overlay(TH1* h1, string f1, TH1* h2, string f2, TH1* h3, string 
     tl->SetNDC(kTRUE);
     tl->SetTextSize(0.05);
     tl->SetTextColor(fDS[f1]->fColor); 
-    tl->DrawLatex(0.15, 0.92, Form("%.1e", h1->Integral())); 
+    tl->DrawLatex(0.15, 0.92, Form("%.2e", h1->Integral())); 
     tl->SetTextColor(fDS[f2]->fColor); 
-    tl->DrawLatex(0.40, 0.92, Form("%.1e", h2->Integral())); 
+    tl->DrawLatex(0.40, 0.92, Form("%.2e", h2->Integral())); 
     tl->SetTextColor(fDS[f3]->fColor); 
-    tl->DrawLatex(0.65, 0.92, Form("%.1e", h3->Integral())); 
+    tl->DrawLatex(0.65, 0.92, Form("%.2e", h3->Integral())); 
   }
 }
 
 // ----------------------------------------------------------------------
-void plotClass::overlay(string h1name, string f1, string h2name, string f2, string h3name, string f3, int method, bool log, bool legend) {
+void plotClass::overlay(string h1name, string f1, string h2name, string f2, string h3name, string f3, int method, bool log, 
+			bool legend, double xleg, double yleg) {
   TH1D *h1 = fDS[f1]->getHist(Form("%s", h1name.c_str())); 
   TH1D *h2 = fDS[f2]->getHist(Form("%s", h2name.c_str())); 
   TH1D *h3 = fDS[f3]->getHist(Form("%s", h3name.c_str())); 
