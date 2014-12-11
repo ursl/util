@@ -41,5 +41,9 @@
 #pragma link C++ function getError(TH1*);
 #pragma link C++ function getErrorRange(TH1*, int, int);
 
+#pragma link C++ function median(TH1*);
+#pragma link C++ function average(double&, double&, int, double*, double*);
+
+
 #endif
 

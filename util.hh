@@ -67,6 +67,7 @@ double chi2Test(TH1*, TH1*, double& chi2, double& ndof, int constrain = 0);
 double chi2TestErr(TH1*, TH1*, double& chi2, double& ndof, int constrain = 0);
 
 void average(double &av, double &error, int n, double *val, double *err); 
+void median(TH1* h); 
 
 // TGraph* scanParameter(int parnum, int nsig, TMinuit &a, void (*func)(int &, double *, double &, double *, int)); 
 

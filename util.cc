@@ -8,6 +8,7 @@
 #include "TCanvas.h"
 #include "TLatex.h"
 #include "TString.h"
+#include "TH1.h"
 #include "TH2.h"
 
 #include "dataset.hh"
@@ -434,3 +435,20 @@ string formatTex(double n, string name, int digits, int sgn) {
   }
   return string(line); 
 }
+
+// ----------------------------------------------------------------------
+double median1(TH1 *h1) { 
+  // http://root.cern.ch/phpBB3/viewtopic.php?t=3620
+  //compute the median for 1-d histogram h1 
+  Int_t nbins = h1->GetXaxis()->GetNbins(); 
+  Double_t *x = new Double_t[nbins]; 
+  Double_t *y = new Double_t[nbins]; 
+  for (Int_t i=0;i<nbins;i++) {
+    x[i] = h1->GetXaxis()->GetBinCenter(i+1); 
+    y[i] = h1->GetBinContent(i+1); 
+  } 
+  Double_t median = TMath::Median(nbins,x,y); 
+  delete [] x; 
+  delete [] y; 
+  return median; 
+} 
