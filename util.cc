@@ -437,7 +437,7 @@ string formatTex(double n, string name, int digits, int sgn) {
 }
 
 // ----------------------------------------------------------------------
-double median1(TH1 *h1) { 
+double median(TH1 *h1) { 
   // http://root.cern.ch/phpBB3/viewtopic.php?t=3620
   //compute the median for 1-d histogram h1 
   Int_t nbins = h1->GetXaxis()->GetNbins(); 
