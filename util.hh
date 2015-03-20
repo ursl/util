@@ -19,6 +19,8 @@ class dataset;
 // string utilities
 // ======================================================================
 void replaceAll(std::string &s, const std::string &from, const std::string &to);
+void cleanupString(std::string &); 
+bool bothAreSpaces(char lhs, char rhs);
 
 // ======================================================================
 // ROOT General utilities

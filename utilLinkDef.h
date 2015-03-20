@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "TH1.h"
 #include "TGraph.h"
 #include "TMinuit.h"
@@ -43,6 +45,11 @@
 
 #pragma link C++ function median(TH1*);
 #pragma link C++ function average(double&, double&, int, double*, double*);
+
+#pragma link C++ function replaceAll(std::string &, const std::string &, const std::string &);
+#pragma link C++ function cleanupString(std::string &); 
+#pragma link C++ function bothAreSpaces(char, char); 
+
 
 
 #endif

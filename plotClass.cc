@@ -86,6 +86,8 @@ void plotClass::treeAnalysis() {
 void plotClass::normHist(TH1 *h, string ds, int method) {
   double scale(1.); 
   string smethod("");
+  cout << "==>plotClass:  normHist ds = " << ds << endl;
+
   // -- normalize to 1
   if (method == UNITY) {
     smethod = "unity"; 
@@ -119,7 +121,7 @@ void plotClass::normHist(TH1 *h, string ds, int method) {
     scale = 1.;
   }
 
-  cout << "==>plotClass:  normHist scaling by " << scale << ", based on method " << smethod << endl;
+  cout << "  scale " << scale  << ", based on method " << smethod  << endl;
 
   double c(0.), e(0.); 
   for (int i = 0; i <= h->GetNbinsX(); ++i) {
