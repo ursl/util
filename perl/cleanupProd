@@ -1,0 +1,34 @@
+#!/usr/bin/perl
+
+# ----------------------------------------------------------------------
+# Usage: cleanupProd -k 10000 DIR1 [DIR2 ...]
+# ----------------------------------------------------------------------
+
+use Getopt::Std;
+getopts('k:d');
+
+if (!$opt_k) {
+    die "provide a keep pattern!\n";
+}
+
+foreach $dir (@ARGV) {
+    print "cleaning $dir\n";
+    opendir(my $dh, $dir) || die "can't opendir $dir: $!";
+    @subdirs = grep {"$dir/$_" } readdir($dh);
+    closedir $dh;
+    foreach $j (@subdirs) {
+	if ($j eq "." || $j eq "..") {next;}
+	if ($j =~ $opt_k) {
+	    print "keep   $dir/$j\n";
+	} else {
+	    if ($opt_d) {
+		print "remove $dir/$j\n";
+	    } else {
+		system("/bin/rm -rf $dir/$j");
+	    }
+	}
+    }
+
+}
+
+
