@@ -12,6 +12,9 @@
 #include "TColor.h"
 #include "TFile.h"
 
+#include "RooPlot.h"
+#include "RooHist.h"
+
 class dataset;
 
 
@@ -49,6 +52,12 @@ void setMaximum(double scale = 1.2, TH1 *h1 = 0, TH1 *h2 = 0);
 void setHist(TH1 *h, dataset *ds);
 void setHistTitles(TH1 *h, dataset *ds, const char *sx, const char *sy, 
 		   float size = 0.05, float xoff = 1.1, float yoff = 1.1, float lsize = 0.05, int font = 42);
+
+// -- RooFit
+void setTitles(RooPlot *h, const char *sx, const char *sy, 
+	       float size = 0.05, float xoff = 1.1, float yoff = 1.1, float lsize = 0.05, int font = 42);
+void removeEmptyBins(RooHist *h, double cutoff = 1.e-6); 
+
 
 // ======================================================================
 // Utitilities for calculations
