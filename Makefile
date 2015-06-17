@@ -11,7 +11,7 @@ LDFLAGS       = -g
 SOFLAGS       = -shared
 
 GLIBS         = $(filter-out -lz, $(ROOTGLIBS))
-GLIBS         += -lMinuit
+GLIBS         += -lMinuit -lRooFitCore -lRooFit
 
 
 # -- Default rules
