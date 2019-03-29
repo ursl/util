@@ -10,9 +10,7 @@
 #include <iomanip>
 #include <cmath>
 
-using std::cout;
-using std::endl;
-using std::set;
+using namespace std;
 
 ClassImp(PidTable)
 
@@ -145,7 +143,7 @@ void PidTable::readFromFile(const char *filename, int mode) {
   if (fVerbose > 0) cout << "Read table contents from " << fullName << endl;
 
   char  buffer[200];
-  ifstream is(fullName);
+  ifstream is(fullName.Data());
   int readLines(0);
   while (is.getline(buffer, 200, '\n')) {
     if (buffer[0] == '#') {continue;}

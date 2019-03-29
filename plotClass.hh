@@ -42,32 +42,32 @@ public :
   virtual void   loadFiles(std::string afiles);
   TFile*         loadFile(std::string afiles);
 
-  // -- Main analysis methods 
+  // -- Main analysis methods
   virtual void   makeAll(int bitmask = 0);
-  virtual void   treeAnalysis(); 
+  virtual void   treeAnalysis();
 
   // -- overlays and normalizing histograms
-  void           normHist(TH1 *, std::string ds="", int method = NONORM); 
+  void           normHist(TH1 *, std::string ds="", int method = NONORM);
   virtual void   overlayAll();
   // -- overlay 2
-  void           overlay(TH1* h1, std::string f1, TH1 *h2, std::string f2, 
+  void           overlay(TH1* h1, std::string f1, TH1 *h2, std::string f2,
 			 int method = NONORM, bool log = false, bool legend = true, double xleg = 0.4, double yleg = 0.6);
-  void           overlay(std::string h1name, std::string f1, std::string h2name, std::string f2, 
+  void           overlay(std::string h1name, std::string f1, std::string h2name, std::string f2,
 			 int method = NONORM, bool log = false, bool legend = true, double xleg = 0.4, double yleg = 0.6);
 
   // -- overlay 3
-  void           overlay(TH1* h1, std::string f1, TH1 *h2, std::string f2, TH1* h3, std::string f3, 
+  void           overlay(TH1* h1, std::string f1, TH1 *h2, std::string f2, TH1* h3, std::string f3,
 			 int method = NONORM, bool log = false, bool legend = true, double xleg = 0.4, double yleg = 0.6);
-  void           overlay(std::string h1name, std::string f1, std::string h2name, std::string f2, std::string h3name, std::string f3, 
+  void           overlay(std::string h1name, std::string f1, std::string h2name, std::string f2, std::string h3name, std::string f3,
 			 int method = NONORM, bool log = false, bool legend = true, double xleg = 0.4, double yleg = 0.6);
 
-  virtual void   bookHist(std::string name); 
+  virtual void   bookHist(std::string name);
 
-  TTree*         getTree(std::string ds, std::string dir = ""); 
-  virtual void   setupTree(TTree *t); 
-  virtual void   loopOverTree(TTree *t, int ifunc, int nevts = -1, int nstart = 0); 
-  virtual void   loopFunction1(); 
-  virtual void   loopFunction2(); 
+  TTree*         getTree(std::string ds, std::string dir = "");
+  virtual void   setupTree(TTree *t);
+  virtual void   loopOverTree(TTree *t, int ifunc, int nevts = -1, int nstart = 0);
+  virtual void   loopFunction1();
+  virtual void   loopFunction2();
 
   void           cd(std::string dataset, std::string dir = "");
   void           replaceAll(std::string &sInput, const std::string &oldString, const std::string &newString);
@@ -80,11 +80,11 @@ public :
 
 protected:
 
-  std::string fTexFileName; 
-  ofstream fTEX; 
+  std::string fTexFileName;
+  std::ofstream fTEX;
 
-  std::string fHistFileName; 
-  TFile      *fHistFile; 
+  std::string fHistFileName;
+  TFile      *fHistFile;
 
   enum HistNorm {NONORM,     // do not touch the normalization
 		 SOMETHING,  // normalize to what is given in fNorm
@@ -95,30 +95,30 @@ protected:
   double fNorm, fLumi; // [fLumi] = 1/fb!!!
 
   bool   fDBX;
-  int    fVerbose; 
-  double fEpsilon; 
+  int    fVerbose;
+  double fEpsilon;
 
-  std::string fDirectory, fSetup, fSuffix;   
+  std::string fDirectory, fSetup, fSuffix;
 
   // -- datasets (files and associated information)
-  std::map<std::string, dataset*> fDS; 
+  std::map<std::string, dataset*> fDS;
   // -- current dataset for analysis
-  std::string fCds; 
+  std::string fCds;
 
   // -- Display utilities
-  int fFont; 
-  double fSize; 
+  int fFont;
+  double fSize;
   TCanvas *c0, *c1, *c2, *c3, *c4, *c5;
-  TLatex *tl; 
+  TLatex *tl;
   TBox *box;
-  TArrow *pa; 
-  TLine *pl; 
+  TArrow *pa;
+  TLine *pl;
   TLegend *legg;
   TLegendEntry *legge;
 
 
   // ----------------------------------------------------------------------
-  ClassDef(plotClass,1) 
+  ClassDef(plotClass,1)
 
 };
 

@@ -436,7 +436,7 @@ void replaceAll(string &str, const string &from, const string &to) {
 // ----------------------------------------------------------------------
 string formatTex(double n, string name, int digits, int sgn) {
   char line[200]; 
-  if ( isnan(n) ) {
+  if ( TMath::IsNaN(n) ) {
     sprintf(line, "\\vdef{%s}   {\\ensuremath{{\\mathrm{NaN} } } }", name.c_str());
   } else if (0 == digits ) {
     sprintf(line, "\\vdef{%s}   {\\ensuremath{{%i } } }", name.c_str(), static_cast<int>(n));

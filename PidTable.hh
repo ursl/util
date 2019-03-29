@@ -1,6 +1,8 @@
 #ifndef PIDTABLE
 #define PIDTABLE
 
+#include <iostream>
+
 #include "TString.h"
 #include "TObject.h"
 #include "TFile.h"
@@ -12,8 +14,6 @@
 #include "TObjArray.h"
 #include "TCollection.h"
 #include "TOrdCollection.h"
-
-#include <fstream>
 
 #include "PidData.hh"
 
@@ -62,7 +62,7 @@ public:
   // -- Utilities
   void     setVerbosity(int t) {fVerbose = t;}
   void     printAll(int i = 0);
-  void     print(ostream &OUT = std::cout);
+  void     print(std::ostream &OUT = std::cout);
   void     setPidTablesDir(const char *s = "/u/ec/ursl/epidtables");
   void     setHistName(const char *s = "e6003") {fHistName = s;}
   void     setHistMinMax(double min, double max) {fHistMin = min; fHistMax = max;}
@@ -198,12 +198,12 @@ private:
   long fMinRun, fMaxRun;  
   int fVerbose, fMode;
   
-  static const double Tmax = 2.4;  
-  static const double Tmin = -2.4;
-  static const int Tbin = 48;
-  static const double Pmax = 20.;
-  static const double Pmin = 0.;
-  static const int Pbin = 40;
+  static constexpr double Tmax = 2.4;  
+  static constexpr double Tmin = -2.4;
+  static constexpr int Tbin = 48;
+  static constexpr double Pmax = 20.;
+  static constexpr double Pmin = 0.;
+  static constexpr int Pbin = 40;
  
   TF1 *fRandom;
   TF1 *fFlat;
