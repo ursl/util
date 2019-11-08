@@ -35,7 +35,6 @@ GLIBS         += -lMinuit -lRooFitCore -lRooFit
 UTIL = util.o \
        dataset.o \
        selpoint.o \
-       hpl.o \
        plotClass.o \
        PidData.o PidTable.o
 
@@ -69,7 +68,7 @@ all: prep lib bin
 
 
 lib: $(addprefix obj/,$(UTIL)  $(DICT))
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(DICT)) -o lib/libutil.so $(GLIBS) -lMinuit
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(DICT)) -o lib/libAnaUtil.so $(GLIBS) -lMinuit
 
 
 # -- create directories if not yet existing
