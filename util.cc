@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <unistd.h>
 
 #include "util.hh"
 #include "TMath.h"
@@ -10,6 +11,11 @@
 #include "TString.h"
 #include "TH1.h"
 #include "TH2.h"
+#include <TRegexp.h>
+#include <TList.h>
+#include <TROOT.h>
+#include "TKey.h"
+#include "TSystem.h"
 
 #include "dataset.hh"
 
@@ -17,22 +23,22 @@ using namespace std;
 
 // ----------------------------------------------------------------------
 void setMaximum(double scale, TH1 *h1, TH1 *h2) {
-  double m(-99.), m1(-99.), m2(-99.); 
-  if (0 != h1) m1 = h1->GetMaximum(); 
-  if (0 != h2) m2 = h2->GetMaximum(); 
+  double m(-99.), m1(-99.), m2(-99.);
+  if (0 != h1) m1 = h1->GetMaximum();
+  if (0 != h2) m2 = h2->GetMaximum();
 
   m = (m1 > m2? m1: m2);
-  if (0 != h1) h1->SetMaximum(scale*m); 
-  if (0 != h2) h2->SetMaximum(scale*m); 
+  if (0 != h1) h1->SetMaximum(scale*m);
+  if (0 != h2) h2->SetMaximum(scale*m);
 }
 
 // ----------------------------------------------------------------------
-void setTitles(TH1 *h, const char *sx, const char *sy, float size, 
+void setTitles(TH1 *h, const char *sx, const char *sy, float size,
 	       float xoff, float yoff, float lsize, int font) {
   if (h == 0) {
     cout << " Histogram not defined" << endl;
   } else {
-    h->SetXTitle(sx);                  h->SetYTitle(sy); 
+    h->SetXTitle(sx);                  h->SetYTitle(sy);
     h->SetTitleOffset(xoff, "x");      h->SetTitleOffset(yoff, "y");
     h->SetTitleSize(size, "x");        h->SetTitleSize(size, "y");
     h->SetLabelSize(lsize, "x");       h->SetLabelSize(lsize, "y");
@@ -43,12 +49,12 @@ void setTitles(TH1 *h, const char *sx, const char *sy, float size,
 }
 
 // ----------------------------------------------------------------------
-void setTitles(RooPlot *h, const char *sx, const char *sy, float size, 
+void setTitles(RooPlot *h, const char *sx, const char *sy, float size,
 	       float xoff, float yoff, float lsize, int font) {
   if (h == 0) {
     cout << " Histogram not defined" << endl;
   } else {
-    h->SetXTitle(sx);                  h->SetYTitle(sy); 
+    h->SetXTitle(sx);                  h->SetYTitle(sy);
     h->SetTitleOffset(xoff, "x");      h->SetTitleOffset(yoff, "y");
     h->SetTitleSize(size, "x");        h->SetTitleSize(size, "y");
     h->SetLabelSize(lsize, "x");       h->SetLabelSize(lsize, "y");
@@ -74,30 +80,30 @@ void removeEmptyBins(RooHist *h, double cutoff) {
 // ----------------------------------------------------------------------
 void setHist(TH1 *h, Int_t color, Int_t symbol, Double_t size, Double_t width) {
   h->SetLineColor(color);   h->SetLineWidth(width);
-  h->SetMarkerColor(color); h->SetMarkerStyle(symbol);  h->SetMarkerSize(size); 
-  h->SetStats(kFALSE); 
+  h->SetMarkerColor(color); h->SetMarkerStyle(symbol);  h->SetMarkerSize(size);
+  h->SetStats(kFALSE);
   h->SetFillStyle(0); h->SetFillColor(color);
 }
 
 // ----------------------------------------------------------------------
 void setHist(TH1 *h, dataset *ds) {
-  if (ds->fColor > -1) setHist(h, ds->fColor, ds->fSymbol, ds->fSize, ds->fWidth); 
-  if (ds->fFillStyle > -1) setFilledHist(h, ds->fColor, ds->fFcolor, ds->fFillStyle, ds->fWidth); 
+  if (ds->fColor > -1) setHist(h, ds->fColor, ds->fSymbol, ds->fSize, ds->fWidth);
+  if (ds->fFillStyle > -1) setFilledHist(h, ds->fColor, ds->fFcolor, ds->fFillStyle, ds->fWidth);
 }
 
 
 // ----------------------------------------------------------------------
-void setHistTitles(TH1 *h, dataset *ds, const char *sx, const char *sy, 
+void setHistTitles(TH1 *h, dataset *ds, const char *sx, const char *sy,
 		   float size, float xoff, float yoff, float lsize, int font) {
-  setHist(h, ds); 
-  setTitles(h, sx, sy, size, xoff, yoff, lsize, font); 
-  
+  setHist(h, ds);
+  setTitles(h, sx, sy, size, xoff, yoff, lsize, font);
+
 }
 
 // ----------------------------------------------------------------------
 void setGraph(TGraph *h, Int_t color, Int_t symbol, Double_t size, Double_t width) {
   h->SetLineColor(color);   h->SetLineWidth(width);
-  h->SetMarkerColor(color); h->SetMarkerStyle(symbol);  h->SetMarkerSize(size); 
+  h->SetMarkerColor(color); h->SetMarkerStyle(symbol);  h->SetMarkerSize(size);
 }
 
 
@@ -127,20 +133,20 @@ void setFilledHist(TH1 *h, Int_t color, Int_t fillcolor, Int_t fillstyle, Int_t 
   // Note: 3004, 3005 are crosshatches
   // ----- 1000       is solid
   //       kYellow    comes out gray on bw printers
-  h->SetLineColor(color);     h->SetLineWidth(width);   
+  h->SetLineColor(color);     h->SetLineWidth(width);
   h->SetFillStyle(fillstyle); h->SetFillColor(fillcolor);
 }
 
 
 // ----------------------------------------------------------------------
 void printNonZero(TH1 *h) {
-  double con(0.), min(0.), max(0.); 
+  double con(0.), min(0.), max(0.);
   for (Int_t i = 0; i <= h->GetNbinsX()+1; ++i) {
-    con = h->GetBinContent(i); 
+    con = h->GetBinContent(i);
     if (con > 0.) {
       min = h->GetBinLowEdge(i);
       max = min + h->GetBinWidth(i);
-      cout << Form("%3d ", i) << Form(" %7.3f ", min) << " .. " << Form(" %7.3f ", max) << ":" 
+      cout << Form("%3d ", i) << Form(" %7.3f ", min) << " .. " << Form(" %7.3f ", max) << ":"
 	   << Form(" %12.3f", con) << " +/- " << Form("%12.3f", h->GetBinError(i))
            << endl;
     }
@@ -150,9 +156,9 @@ void printNonZero(TH1 *h) {
 
 // ----------------------------------------------------------------------
 void stampAndSave(TCanvas *fC, const char *s) {
-  fC->cd(); 
+  fC->cd();
   TLatex tl;
-  TString filename(gFile->GetName()); Int_t index = filename.Index(".root"); filename.Remove(index);  
+  TString filename(gFile->GetName()); Int_t index = filename.Index(".root"); filename.Remove(index);
   TString psname = filename + TString(s);
   double oldA = tl.GetTextAngle();
   double oldS= tl.GetTextSize();
@@ -165,7 +171,7 @@ void stampAndSave(TCanvas *fC, const char *s) {
 
 // ----------------------------------------------------------------------
 void shrinkPad(double b, double l, double r, double t) {
-  gPad->SetBottomMargin(b); 
+  gPad->SetBottomMargin(b);
   gPad->SetLeftMargin(l);
   gPad->SetRightMargin(r);
   gPad->SetTopMargin(t);
@@ -174,7 +180,7 @@ void shrinkPad(double b, double l, double r, double t) {
 // ----------------------------------------------------------------------
 void zone(int x, int y, TCanvas *c) {
   if (c == 0) {
-    c = (TCanvas*)gROOT->FindObject("c0"); 
+    c = (TCanvas*)gROOT->FindObject("c0");
     if (c == 0) {
       cout << "TCanvas c0 not found. Creating my own version." << endl;
       c = new TCanvas("c0","--c0--",356,0,656,700);
@@ -188,7 +194,7 @@ void zone(int x, int y, TCanvas *c) {
 
 // ----------------------------------------------------------------------
 int wait() {
-  cout << " Continue [<RET>|q]?  "; 
+  cout << " Continue [<RET>|q]?  ";
   char x;
   x = getchar();
   if ((x == 'q') || (x == 'Q')) return 1;
@@ -250,7 +256,7 @@ double dBF(double n, double nE, double N, double NE, double e, double eE) {
   double e2 = e*e;
   double N2 = N*N;
 
-  double dbdn2 = 1./(e2*N2); 
+  double dbdn2 = 1./(e2*N2);
   double dbde2 = (n2)/(e2*e2*N2);
   double dbdN2 = (n2)/(e2*N2*N2);
 
@@ -322,7 +328,7 @@ double chi2Test(TH1 *h1, TH1 *h2, double& chi2, double& ndof, int constrain) {
     cout << "chi2Test: Number of bins not the same" << endl;
     return -99.;
   }
-  double df = nbins - 1 - constrain; 
+  double df = nbins - 1 - constrain;
   double chsq(0.), a1(0.), a2(0.);
   for (int i = 1; i <= nbins; ++i) {
     a1 = h1->GetBinContent(i);
@@ -349,7 +355,7 @@ double chi2TestErr(TH1 *h1, TH1 *h2, double& chi2, double& ndof, int constrain) 
     cout << "chi2Test: Number of bins not the same" << endl;
     return -99.;
   }
-  double df = nbins - 1 - constrain; 
+  double df = nbins - 1 - constrain;
   double chsq(0.), a1(0.), a2(0.), e1(0.), e2(0.);
   for (int i = 1; i <= nbins; ++i) {
     a1 = h1->GetBinContent(i);
@@ -370,14 +376,14 @@ double chi2TestErr(TH1 *h1, TH1 *h2, double& chi2, double& ndof, int constrain) 
   return gamma;
 }
 
-    
+
 // ----------------------------------------------------------------------
 void average(double &av, double &error, int n, double *val, double *verr) {
-  double e(0.), w8(0.), sumW8(0.), sumAve(0.); 
+  double e(0.), w8(0.), sumW8(0.), sumAve(0.);
   for (int i = 0; i < n; ++i) {
     //    cout << i << " " << val[i] << " +/- " << verr[i] << endl;
 
-    // -- calculate mean and error 
+    // -- calculate mean and error
     e = verr[i];
     if (e > 0.) {
       w8 = 1./(e*e);
@@ -400,7 +406,7 @@ void average(double &av, double &error, int n, double *val, double *verr) {
 
 // ----------------------------------------------------------------------
 bool isQuark(int id) {
-  unsigned int aid = TMath::Abs(id); 
+  unsigned int aid = TMath::Abs(id);
   if (1 == aid) return true;
   if (2 == aid) return true;
   if (3 == aid) return true;
@@ -412,7 +418,7 @@ bool isQuark(int id) {
 
 // ----------------------------------------------------------------------
 bool isLepton(int id) {
-  unsigned int aid = TMath::Abs(id); 
+  unsigned int aid = TMath::Abs(id);
   if (13 == aid) return true;
   if (11 == aid) return true;
   if (15 == aid) return true;
@@ -435,7 +441,7 @@ void replaceAll(string &str, const string &from, const string &to) {
 
 // ----------------------------------------------------------------------
 string formatTex(double n, string name, int digits, int sgn) {
-  char line[200]; 
+  char line[200];
   if ( TMath::IsNaN(n) ) {
     sprintf(line, "\\vdef{%s}   {\\ensuremath{{\\mathrm{NaN} } } }", name.c_str());
   } else if (0 == digits ) {
@@ -462,40 +468,265 @@ string formatTex(double n, string name, int digits, int sgn) {
     sprintf(line, "\\vdef{%s}   {\\ensuremath{{%f } } }", name.c_str(), n);
     if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{%+f } } }", name.c_str(), n);
   }
-  return string(line); 
+  return string(line);
 }
 
 // ----------------------------------------------------------------------
-double median(TH1 *h1) { 
+double median(TH1 *h1) {
   // http://root.cern.ch/phpBB3/viewtopic.php?t=3620
-  //compute the median for 1-d histogram h1 
-  Int_t nbins = h1->GetXaxis()->GetNbins(); 
-  Double_t *x = new Double_t[nbins]; 
-  Double_t *y = new Double_t[nbins]; 
+  //compute the median for 1-d histogram h1
+  Int_t nbins = h1->GetXaxis()->GetNbins();
+  Double_t *x = new Double_t[nbins];
+  Double_t *y = new Double_t[nbins];
   for (Int_t i=0;i<nbins;i++) {
-    x[i] = h1->GetXaxis()->GetBinCenter(i+1); 
-    y[i] = h1->GetBinContent(i+1); 
-  } 
-  Double_t median = TMath::Median(nbins,x,y); 
-  delete [] x; 
-  delete [] y; 
-  return median; 
-} 
+    x[i] = h1->GetXaxis()->GetBinCenter(i+1);
+    y[i] = h1->GetBinContent(i+1);
+  }
+  Double_t median = TMath::Median(nbins,x,y);
+  delete [] x;
+  delete [] y;
+  return median;
+}
 
 // ----------------------------------------------------------------------
 void cleanupString(string &s) {
-  replaceAll(s, "\t", " "); 
+  replaceAll(s, "\t", " ");
   string::size_type s1 = s.find("#");
-  if (string::npos != s1) s.erase(s1); 
+  if (string::npos != s1) s.erase(s1);
   if (0 == s.length()) return;
   string::iterator new_end = unique(s.begin(), s.end(), bothAreSpaces);
-  s.erase(new_end, s.end()); 
-  if (s.substr(0, 1) == string(" ")) s.erase(0, 1); 
-  if (s.substr(s.length()-1, 1) == string(" ")) s.erase(s.length()-1, 1); 
+  s.erase(new_end, s.end());
+  if (s.substr(0, 1) == string(" ")) s.erase(0, 1);
+  if (s.substr(s.length()-1, 1) == string(" ")) s.erase(s.length()-1, 1);
 }
 
 
 // ----------------------------------------------------------------------
-bool bothAreSpaces(char lhs, char rhs) { 
-  return (lhs == rhs) && (lhs == ' '); 
+bool bothAreSpaces(char lhs, char rhs) {
+  return (lhs == rhs) && (lhs == ' ');
+}
+
+
+// ----------------------------------------------------------------------
+void hplAll(const char *hpat, const char *options) {
+
+  TCanvas *cc = (TCanvas*)gROOT->FindObject("c0");
+  cc->Clear();
+  vector<TH1D *> h1;
+  vector<TH2D *> h2;
+
+  TIter next(gDirectory->GetListOfKeys());
+  TKey *key(0);
+  while ((key = (TKey*)next())) {
+    if (gROOT->GetClass(key->GetClassName())->InheritsFrom("TDirectory")) continue;
+    TH1 *sig = (TH1*)key->ReadObj();
+    TString hname(sig->GetName());
+    if (!hname.Contains(hpat)) continue;
+    if (gROOT->GetClass(key->GetClassName())->InheritsFrom("TH1D")) {
+      h1.push_back((TH1D*)gDirectory->Get(hname));
+    }
+    if (gROOT->GetClass(key->GetClassName())->InheritsFrom("TH2D")) {
+      h2.push_back((TH2D*)gDirectory->Get(hname));
+    }
+  }
+
+  cout << "size of h1: " << h1.size() << endl;
+  cin.clear();
+  for (unsigned int i = 0; i < h1.size(); ++i) {
+    hpl(h1[i], options);
+    cc->Modified();
+    cc->Update();
+    gSystem->ProcessEvents();
+    cout << h1[i]->GetName() << " [RET|q|Q]" << endl;
+    string x;
+    std::getline(std::cin, x);
+    if (x == EOF || x == "q" || x == "Q") {
+      break;
+    }
+  }
+}
+
+
+
+// ----------------------------------------------------------------------
+void hpl(const char *h, const char *options) {
+
+  TH1 *h1 = (TH1*)gDirectory->Get(h);
+  if (!h1) {
+    cout << h << " not found" << endl;
+  } else {
+    hpl(h1, options);
+  }
+}
+
+
+
+// ----------------------------------------------------------------------
+void hpl(TH1 *hin, const char *options) {
+
+  TH1 *h = (TH1*)hin->Clone(Form("hpl_%s", hin->GetName()));
+
+  TString parse(options);
+
+  if (!h) {
+    cout << "histogram not found" << endl;
+  }
+
+  // -- "same" shortcut
+  if (parse.Contains(",s", TString::kIgnoreCase)) {
+    parse += TString("same");
+  }
+
+  // -- limits
+  float xmin(99.), xmax(98.),  ymin(99.), ymax(98.);
+  TRegexp re1("(.*:.*)");
+  TRegexp re2("(.*:.*,.*:.*)");
+  TSubString bla2 = parse(re2);
+  sscanf(bla2.Data(), "(%f:%f,%f:%f)", &xmin, &xmax, &ymin, &ymax);
+  parse(re2) = "";
+  if ((xmin < ymax) && (ymin < ymax)) {
+    cout << "restricting x to " << xmin << " .. " << xmax << " and y to " << ymin << " .. " << ymax << endl;
+    h->SetAxisRange(xmin, xmax);
+    h->SetMinimum(ymin);
+    h->SetMaximum(ymax);
+  }
+  TSubString  bla1 = parse(re1);
+  sscanf(bla1.Data(), "(%f:%f)", &xmin, &xmax);
+  parse(re1) = "";
+  if (xmin < xmax) {
+    cout << "restricting to " << xmin << " .. " << xmax << endl;
+    h->SetAxisRange(xmin, xmax);
+  }
+
+
+  // -- normalize histogram to histogram already plotted
+  if (parse.Contains("norm", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("norm"), "");
+    TList *tl = gPad->GetListOfPrimitives();
+    if (tl) {
+      TListIter next(tl);
+      TObject *to;
+      double norma(-99.);
+      TH1 *h1;
+      while ((to=next())) {
+	if (to->InheritsFrom(TH1::Class())) {
+	  h1 = (TH1*)to;
+	  norma = h1->GetSumOfWeights();
+	  cout << h1->GetName() << "  " << h1->GetTitle() << " with " << norma << " events "  << endl;
+	  break; // Take first one
+	}
+      }
+      if (norma > -99.) {
+	h->Scale(norma/h->GetSumOfWeights());
+      }
+    }
+  }
+
+
+
+  // -- grids, logx
+  if (parse.Contains("logy", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("logy"), "");
+    gPad->SetLogy(1);
+  }
+  if (parse.Contains("liny", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("liny"), "");
+    gPad->SetLogy(0);
+  }
+  if (parse.Contains("logx", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("logx"), "");
+    gPad->SetLogx(1);
+  }
+  if (parse.Contains("linx", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("linx"), "");
+    gPad->SetLogx(0);
+  }
+  if (parse.Contains("logz", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("logz"), "");
+    gPad->SetLogz(1);
+  }
+  if (parse.Contains("linz", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("linz"), "");
+    gPad->SetLogz(0);
+  }
+  if (parse.Contains("gridx", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("gridx"), "");
+    gPad->SetGridx(1);
+  }
+  if (parse.Contains("gridy", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("gridy"), "");
+    gPad->SetGridy(1);
+  }
+  if (parse.Contains("ngridx", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("ngridx"), "");
+    gPad->SetGridx(0);
+  }
+  if (parse.Contains("ngridy", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("ngridy"), "");
+    gPad->SetGridy(0);
+  }
+
+  // -- Colors, fillstyle
+  if (parse.Contains("red", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("red"), "");
+    h->SetMarkerColor(kRed);
+    h->SetLineColor(kRed);
+    h->SetFillColor(kRed);
+  }
+  else if (parse.Contains("green", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("green"), "");
+    h->SetMarkerColor(kGreen);
+    h->SetLineColor(kGreen);
+    h->SetFillColor(kGreen);
+  }
+  else if (parse.Contains("yellow", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("yellow"), "");
+    h->SetMarkerColor(kYellow);
+    h->SetLineColor(kYellow);
+    h->SetFillColor(kYellow);
+  }
+  else if (parse.Contains("blue", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("blue"), "");
+    h->SetMarkerColor(kBlue);
+    h->SetLineColor(kBlue);
+    h->SetFillColor(kBlue);
+  }
+  else if (parse.Contains("cyan", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("cyan"), "");
+    h->SetMarkerColor(kCyan);
+    h->SetLineColor(kCyan);
+    h->SetFillColor(kCyan);
+  }
+  else {
+    h->SetMarkerColor(kBlack);
+    h->SetLineColor(kBlack);
+  }
+
+  if (parse.Contains("dot", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("dot"), "");
+    h->SetLineStyle(3);
+  }
+  else if (parse.Contains("dash", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("dash"), "");
+    h->SetLineStyle(2);
+  }
+
+  if (parse.Contains("fill", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("fill"), "");
+    h->SetLineColor(kBlack);
+    h->SetFillStyle(1000);
+  }
+  else if (parse.Contains("upr", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("upr"), "");
+    h->SetFillStyle(3004);
+  }
+  else if (parse.Contains("upl", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("upl"), "");
+    h->SetFillStyle(3005);
+  }
+  else {
+    h->SetFillStyle(0);
+  }
+
+  h->Draw(parse);
 }

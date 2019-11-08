@@ -47,10 +47,12 @@
 #pragma link C++ function average(double&, double&, int, double*, double*);
 
 #pragma link C++ function replaceAll(std::string &, const std::string &, const std::string &);
-#pragma link C++ function cleanupString(std::string &); 
-#pragma link C++ function bothAreSpaces(char, char); 
+#pragma link C++ function cleanupString(std::string &);
+#pragma link C++ function bothAreSpaces(char, char);
 
+#pragma link C++ function hpl(TH1*, const char *);
+#pragma link C++ function hpl(const char *, const char *);
+#pragma link C++ function hplAll(const char *, const char *);
 
 
 #endif
-
