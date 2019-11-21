@@ -520,13 +520,18 @@ void hplAll(const char *hpat, const char *options) {
   while ((key = (TKey*)next())) {
     if (gROOT->GetClass(key->GetClassName())->InheritsFrom("TDirectory")) continue;
     TH1 *sig = (TH1*)key->ReadObj();
+    int version = key->GetCycle();
     TString hname(sig->GetName());
+    //    hname += Form(";%d", version);
+    //    cout << "hname = " << hname << endl;
     if (!hname.Contains(hpat)) continue;
     if (gROOT->GetClass(key->GetClassName())->InheritsFrom("TH1D")) {
       h1.push_back((TH1D*)gDirectory->Get(hname));
+      h1.back()->SetName(Form("%s;%d", h1.back()->GetName(), version));
     }
     if (gROOT->GetClass(key->GetClassName())->InheritsFrom("TH2D")) {
       h2.push_back((TH2D*)gDirectory->Get(hname));
+      h2.back()->SetName(Form("%s;%d", h2.back()->GetName(), version));
     }
   }
 
@@ -536,7 +541,7 @@ void hplAll(const char *hpat, const char *options) {
     hpl(h1[i], options);
     cc->Modified();
     cc->Update();
-    gSystem->ProcessEvents();
+    gSystem->ProcessEvents(); // macos peculiarity!
     cout << h1[i]->GetName() << " [RET|q|Q]" << endl;
     string x;
     std::getline(std::cin, x);
