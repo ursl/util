@@ -114,7 +114,7 @@ bool isQuark(int id);
 // ======================================================================
 void  hpl(TH1 *h, const char *options="");
 void  hpl(const char *h, const char *options="");
-void  hplAll(const char *h, const char *options="");
+void  hplAll(const char *h, const char *options="", int n = -1);
 // ======================================================================
 
 

@@ -52,7 +52,7 @@
 
 #pragma link C++ function hpl(TH1*, const char *);
 #pragma link C++ function hpl(const char *, const char *);
-#pragma link C++ function hplAll(const char *, const char *);
+#pragma link C++ function hplAll(const char *, const char *, int);
 
 
 #endif

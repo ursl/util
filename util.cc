@@ -508,12 +508,14 @@ bool bothAreSpaces(char lhs, char rhs) {
 
 
 // ----------------------------------------------------------------------
-void hplAll(const char *hpat, const char *options) {
+void hplAll(const char *hpat, const char *options, int n) {
 
   TCanvas *cc = (TCanvas*)gROOT->FindObject("c0");
   cc->Clear();
   vector<TH1D *> h1;
+  if (n > 0) h1.reserve(n);
   vector<TH2D *> h2;
+  if (n > 0) h2.reserve(n);
 
   TIter next(gDirectory->GetListOfKeys());
   TKey *key(0);
@@ -535,22 +537,41 @@ void hplAll(const char *hpat, const char *options) {
     }
   }
 
-  cout << "size of h1: " << h1.size() << endl;
-  cin.clear();
-  for (unsigned int i = 0; i < h1.size(); ++i) {
-    hpl(h1[i], options);
-    cc->Modified();
-    cc->Update();
-    gSystem->ProcessEvents(); // macos peculiarity!
-    cout << h1[i]->GetName() << " [RET|q|Q]" << endl;
-    string x;
-    std::getline(std::cin, x);
-    if (x == EOF || x == "q" || x == "Q") {
-      break;
+  if (h1.size() > 0) {
+    cout << "size of h1: " << h1.size() << endl;
+    cin.clear();
+    for (unsigned int i = 0; i < h1.size(); ++i) {
+      hpl(h1[i], options);
+      cc->Modified();
+      cc->Update();
+      gSystem->ProcessEvents(); // macos peculiarity!
+      cout << h1[i]->GetName() << " [RET|q|Q]" << endl;
+      string x;
+      std::getline(std::cin, x);
+      if (x == EOF || x == "q" || x == "Q") {
+	break;
+      }
     }
   }
-}
 
+  if (h2.size() > 0) {
+    cout << "size of h2: " << h2.size() << endl;
+    cin.clear();
+    for (unsigned int i = 0; i < h2.size(); ++i) {
+      hpl(h2[i], options);
+      cc->Modified();
+      cc->Update();
+      gSystem->ProcessEvents(); // macos peculiarity!
+      cout << h2[i]->GetName() << " [RET|q|Q]" << endl;
+      string x;
+      std::getline(std::cin, x);
+      if (x == EOF || x == "q" || x == "Q") {
+	break;
+      }
+    }
+  }
+
+}
 
 
 // ----------------------------------------------------------------------
