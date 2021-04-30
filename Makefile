@@ -21,7 +21,8 @@ else
   endif
 endif
 
-CXXFLAGS      = -g -O0 -W -Wall -fPIC -pipe
+#?? CXXFLAGS      = -g -O0 -W -Wall -fPIC -pipe
+CXXFLAGS      = -g -O0 -Wall -fPIC -pipe
 CXXFLAGS     += $(ROOTCFLAGS)
 
 LD            = $(CXX)

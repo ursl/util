@@ -155,6 +155,109 @@ void printNonZero(TH1 *h) {
 
 
 // ----------------------------------------------------------------------
+void printAxesLabels(TH1 *h) {
+  if (0 == h) {
+    cout << "histogram does not exist" << endl;
+    return;
+  }
+  double min(0.), max(0.);
+  TString la;
+  for (Int_t i = 0; i <= h->GetNbinsX()+1; ++i) {
+    la = h->GetXaxis()->GetBinLabel(i);
+    min = h->GetBinLowEdge(i);
+    max = min + h->GetBinWidth(i);
+    if (la != "") {
+      cout << Form("%3d ", i) << Form(" %7.3f ", min) << " .. " << Form(" %7.3f ", max) << ":"
+           << h->GetXaxis()->GetBinLabel(i)
+           << ", bin content: " << h->GetBinContent(i)
+           << endl;
+    }
+  }
+}
+
+
+// ----------------------------------------------------------------------
+double getValueByLabel(TH1 *h, string label) {
+  string axislabel;
+  if (h) {
+    for (int i = 1; i <= h->GetNbinsX(); ++i) {
+      axislabel = h->GetXaxis()->GetBinLabel(i);
+      if (string::npos != axislabel.find(label)) return h->GetBinContent(i);
+    }
+  }
+  return -999.;
+}
+
+
+// ----------------------------------------------------------------------
+void addOverflow(TH1D *h) {
+  int nbins = h->GetNbinsX();
+  h->SetBinContent(nbins, h->GetBinContent(nbins) + h->GetBinContent(nbins+1));
+  h->SetBinContent(nbins+1, 0.);
+}
+
+
+// ----------------------------------------------------------------------
+void addUnderflow(TH1D *h) {
+  h->SetBinContent(1, h->GetBinContent(1) + h->GetBinContent(0));
+  h->SetBinContent(0, 0.);
+}
+
+// ----------------------------------------------------------------------
+void zeroNegativeEntries(TH1D *h) {
+  for (int i = 0; i <= h->GetNbinsX()+1; ++i) {
+    if ((h->GetBinContent(i) < 0.) || (TMath::IsNaN(h->GetBinContent(i)))) {
+      h->SetBinContent(i, 0.);
+      h->SetBinError(i, 0.);
+    }
+  }
+}
+
+// ----------------------------------------------------------------------
+void showOverflow(TH1 *h) {
+  h->SetBinContent(h->GetNbinsX(), h->GetBinContent(h->GetNbinsX()) + h->GetBinContent(h->GetNbinsX()+1));
+  h->SetBinContent(h->GetNbinsX()+1, 0.);
+  h->SetBinContent(1, h->GetBinContent(1) + h->GetBinContent(0));
+  h->SetBinContent(0, 0.);
+}
+
+
+// ----------------------------------------------------------------------
+TLegend* newLegend(string title, double x1, double y1, double x2, double y2,
+                   vector<TH1*> hists, vector<string> names, vector<string> options) {
+  if (hists.size() != names.size()) {
+    cout << "hists and names vectors do not match size" << endl;
+    return 0;
+  }
+  if (hists.size() != options.size()) {
+    cout << "hists and options vectors do not match size" << endl;
+    return 0;
+  }
+  TLegend *legg = new TLegend(x1, y1, x2, y2, title.c_str());
+  legg->SetFillStyle(0);
+  legg->SetBorderSize(0);
+  legg->SetTextSize(0.04);
+  legg->SetFillColor(0);
+  legg->SetTextFont(52);
+  for (unsigned int i = 0; i < hists.size(); ++i) {
+    legg->AddEntry(hists[i], names[i].c_str(), options[i].c_str());
+  }
+  return legg;
+}
+
+// ----------------------------------------------------------------------
+TLegend* newLegend(double x1, double y1, double x2, double y2) {
+  TLegend *legg = new TLegend(x1, y1, x2, y2);
+  legg->SetFillStyle(0);
+  legg->SetBorderSize(0);
+  legg->SetTextSize(0.04);
+  legg->SetFillColor(0);
+  legg->SetTextFont(52);
+  return legg;
+}
+
+
+// ----------------------------------------------------------------------
 void stampAndSave(TCanvas *fC, const char *s) {
   fC->cd();
   TLatex tl;
@@ -200,6 +303,22 @@ int wait() {
   if ((x == 'q') || (x == 'Q')) return 1;
   return 0;
 }
+
+
+// ----------------------------------------------------------------------
+vector<int> defVector(int n, ...) {
+  va_list vl;
+  va_start(vl, n);
+  vector<int> vect;
+  int a(0);
+  for (int i = 0; i < n; ++i) {
+    a = va_arg(vl, int);
+    vect.push_back(a);
+  }
+  va_end(vl);
+  return vect;
+}
+
 
 
 // ----------------------------------------------------------------------
@@ -376,13 +495,15 @@ double chi2TestErr(TH1 *h1, TH1 *h2, double& chi2, double& ndof, int constrain) 
   return gamma;
 }
 
+// ----------------------------------------------------------------------
+void mk4Vector(TLorentzVector &p4, const Double_t p, const Double_t t, const Double_t f, const Double_t m) {
+  p4.SetXYZM(p*TMath::Sin(t)*TMath::Cos(f), p*TMath::Sin(t)*TMath::Sin(f), p*TMath::Cos(t), m);
+}
 
 // ----------------------------------------------------------------------
 void average(double &av, double &error, int n, double *val, double *verr) {
   double e(0.), w8(0.), sumW8(0.), sumAve(0.);
   for (int i = 0; i < n; ++i) {
-    //    cout << i << " " << val[i] << " +/- " << verr[i] << endl;
-
     // -- calculate mean and error
     e = verr[i];
     if (e > 0.) {
@@ -403,6 +524,123 @@ void average(double &av, double &error, int n, double *val, double *verr) {
   }
 
 }
+
+
+// ----------------------------------------------------------------------
+void average(double &av, double &error, vector<double> &val, vector<double> &verr, double &chi2) {
+
+  double e(0.), w8(0.), sumW8(0.), sumAve(0.);
+  for (unsigned int i = 0; i < val.size(); ++i) {
+    cout << i << " " << val[i] << " +/- " << verr[i];
+
+    // -- calculate mean and error
+    e = verr[i];
+    if (e > 0.) {
+      w8 = 1./(e*e);
+      sumW8  += w8;
+      sumAve += w8*val[i];
+      cout << " w8 = " << w8 << " sumW8 = " << sumW8 << " sumAve = " << sumAve << endl;
+    } else {
+      cout << "average: Error = 0 for " << val[i] << endl;
+      continue;
+    }
+  }
+  if (sumW8 > 0.) {
+    av = sumAve/sumW8;
+    sumW8 = TMath::Sqrt(sumW8);
+    error = 1./sumW8;
+  } else {
+    av = -99.;
+    error = -99.;
+  }
+  cout << "sqrt(sumW8) = " << sumW8 << " av = " << av << " +/- " << error << endl;
+
+  chi2 = 0;
+  for (unsigned int i = 0; i < val.size(); ++i) {
+    e = verr[i];
+    if (e > 0.) {
+      w8 = 1./(e*e);
+    } else {
+      w8 = 0.;
+    }
+    chi2 += w8*(av-val[i])*(av-val[i]);
+  }
+}
+
+
+// ----------------------------------------------------------------------
+double poissonError(int n, double &up, double &down) {
+  if (n > 9) {
+    up = down = TMath::Sqrt(n);
+    return (0.5*(up+down));
+  }
+
+  if (n < 0) {
+    up = down = -99.;
+    return -99.;
+  }
+  if (n < 2) {
+    down = 0.827;
+    up   = 2.299;
+    return (0.5*(up+down));
+  }
+  if (2 == n) {
+    down = 1.292;
+    up   = 2.637;
+    return (0.5*(up+down));
+  }
+  if (3 == n) {
+    down = 1.633;
+    up   = 2.918;
+    return (0.5*(up+down));
+  }
+  if (4 == n) {
+    down = 1.914;
+    up   = 3.162;
+    return (0.5*(up+down));
+  }
+  if (5 == n) {
+    down = 2.159;
+    up   = 3.382;
+    return (0.5*(up+down));
+  }
+  if (6 == n) {
+    down = 2.380;
+    up   = 2.581;
+    return (0.5*(up+down));
+  }
+  if (7 == n) {
+    down = 2.581;
+    up   = 3.770;
+    return (0.5*(up+down));
+  }
+  if (8 == n) {
+    down = 2.768;
+    up   = 3.944;
+    return (0.5*(up+down));
+  }
+  if (9 == n) {
+    down = 2.943;
+    up   = 4.110;
+    return (0.5*(up+down));
+  }
+
+  return -1.;
+}
+
+
+
+// ----------------------------------------------------------------------
+int quarkFlavor(int i) {
+  if (isBeautyMeson(i) || isBeautyBaryon(i)) {
+    return 5;
+  } else if (isCharmMeson(i) || isCharmBaryon(i)) {
+    return 4;
+  } else {
+    return 3;
+  }
+}
+
 
 // ----------------------------------------------------------------------
 bool isQuark(int id) {
@@ -429,6 +667,84 @@ bool isLepton(int id) {
 }
 
 // ----------------------------------------------------------------------
+bool isBeautyMesonWeak(int i) {
+  if (511 == TMath::Abs(i)) return true;
+  if (521 == TMath::Abs(i)) return true;
+  if (531 == TMath::Abs(i)) return true;
+  return false;
+}
+
+// ----------------------------------------------------------------------
+bool isBeautyBaryonWeak(int i) {
+  if (5122 == TMath::Abs(i)) return true;
+  if (5132 == TMath::Abs(i)) return true;
+  if (5232 == TMath::Abs(i)) return true;
+  if (5332 == TMath::Abs(i)) return true;
+  return false;
+}
+
+
+// ----------------------------------------------------------------------
+bool isCharmMesonWeak(int i) {
+  if (411 == TMath::Abs(i)) return true;
+  if (421 == TMath::Abs(i)) return true;
+  if (431 == TMath::Abs(i)) return true;
+  return false;
+}
+
+// ----------------------------------------------------------------------
+bool isCharmBaryonWeak(int i) {
+  if (4122 == TMath::Abs(i)) return true;
+  if (4132 == TMath::Abs(i)) return true;
+  if (4232 == TMath::Abs(i)) return true;
+  if (4332 == TMath::Abs(i)) return true;
+  return false;
+}
+
+// ----------------------------------------------------------------------
+bool isBeautyMeson(int i) {
+  int rest = (TMath::Abs(i)%1000);
+  return (rest > 499 && rest < 600);
+}
+
+// ----------------------------------------------------------------------
+bool isBeautyBaryon(int i) {
+  int rest = (TMath::Abs(i)%1000);
+  return (rest > 4999 && rest < 6000);
+}
+
+// ----------------------------------------------------------------------
+bool isCharmMeson(int i) {
+  int rest = (TMath::Abs(i)%1000);
+  return (rest > 399 && rest < 500);
+}
+
+// ----------------------------------------------------------------------
+bool isCharmBaryon(int i) {
+  int rest = (TMath::Abs(i)%1000);
+  return (rest > 3999 && rest < 5000);
+}
+
+// ----------------------------------------------------------------------
+bool isLightMeson(int i) {
+  int rest = (TMath::Abs(i)%1000);
+  return (rest > 99 && rest < 400);
+}
+
+// ----------------------------------------------------------------------
+bool isStableCharged(int i) {
+  if (211 == TMath::Abs(i)) return true;
+  if (321 == TMath::Abs(i)) return true;
+  if (11 == TMath::Abs(i)) return true;
+  if (13 == TMath::Abs(i)) return true;
+  if (2122 == TMath::Abs(i)) return true;
+  return false;
+}
+
+
+
+
+// ----------------------------------------------------------------------
 void replaceAll(string &str, const string &from, const string &to) {
   if (from.empty()) return;
   size_t start_pos = 0;
@@ -437,6 +753,7 @@ void replaceAll(string &str, const string &from, const string &to) {
     start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
   }
 }
+
 
 
 // ----------------------------------------------------------------------
@@ -464,12 +781,175 @@ string formatTex(double n, string name, int digits, int sgn) {
   } else if (6 == digits ) {
     sprintf(line, "\\vdef{%s}   {\\ensuremath{{%7.6f } } }", name.c_str(), n);
     if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{%+7.6f } } }", name.c_str(), n);
+  } else if (7 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{%8.7f } } }", name.c_str(), n);
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{%+8.7f } } }", name.c_str(), n);
+  } else if (8 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{%9.8f } } }", name.c_str(), n);
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{%+9.8f } } }", name.c_str(), n);
+  } else if (9 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{%10.9f } } }", name.c_str(), n);
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{%+10.9f } } }", name.c_str(), n);
+  } else if (10 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{%11.10f } } }", name.c_str(), n);
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{%+11.10f } } }", name.c_str(), n);
+  } else if (11 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{%12.11f } } }", name.c_str(), n);
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{%+12.11f } } }", name.c_str(), n);
   } else {
     sprintf(line, "\\vdef{%s}   {\\ensuremath{{%f } } }", name.c_str(), n);
     if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{%+f } } }", name.c_str(), n);
   }
+
   return string(line);
 }
+
+// ----------------------------------------------------------------------
+string formatTexErrSci(double n, double nE, string name, int digits, int sgn) {
+
+  char line[200];
+
+  if (TMath::Abs(n) < 1.e-15) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{0} }", name.c_str());
+    return string(line);
+  }
+
+  bool negative(false);
+  if (n < 0) {
+    n *= -1.;
+    negative = true;
+  }
+  double expoN  = TMath::Log10(n);
+  //  cout << "original expoN = " << expoN << endl;
+  //  if (negative) expoN -= 1;
+  double expoNE = TMath::Log10(nE);
+  //  cout << "original expoNE = " << expoNE << endl;
+  if (expoNE < 0) expoNE -= 1;
+
+  double ratio = expoNE - expoN;
+  double mantN  = n / TMath::Power(10, static_cast<int>(expoN));
+  if (negative) mantN *= -1.;
+  double mantNE = nE / TMath::Power(10, static_cast<int>(expoNE-ratio));
+
+  // cout << setw(2) << "expoN = " << expoN << " expoNE == " << expoNE
+  //      << " mantN = " << mantN << " mantNE = " << mantNE << " ratio = " << ratio
+  //      << endl;
+
+  if (TMath::IsNaN(n) || TMath::IsNaN(nE)) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{\\mathrm{NaN} } } }",
+	    name.c_str());
+  } else if (1 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%5.1f \\pm %5.1f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+5.1f \\pm %5.1f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (2 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%5.2f \\pm %5.2f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+5.2f \\pm %5.2f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (3 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%5.3f \\pm %5.3f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+5.3f \\pm %5.3f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (4 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%5.4f \\pm %5.4f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+5.4f \\pm %5.4f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (5 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%6.5f \\pm %6.5f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+6.5f \\pm %6.5f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (6 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%7.6f \\pm %7.6f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+7.6f \\pm %7.6f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (7 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%8.7f \\pm %8.7f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+8.7f \\pm %8.7f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (8 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%9.8f \\pm %9.8f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+9.8f \\pm %9.8f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (9 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%10.9f \\pm %10.9f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+10.9f \\pm %10.9f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (10 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%11.10f \\pm %11.10f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+11.10f \\pm %11.10f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (11 == digits ) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%12.11f \\pm %12.11f)\\times 10^{%d}} } }",
+	    name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{(%+12.11f \\pm %12.11f)\\times 10^{%d}} } }",
+		     name.c_str(), mantN, mantNE, static_cast<int>(expoN));
+  } else if (digits <0) {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{%5.1f \\times 10^{%d}} } }",
+	    name.c_str(), mantN, static_cast<int>(expoN));
+    if (sgn) sprintf(line, "\\vdef{%s}   {\\ensuremath{{%+5.1f \\times 10^{%d}} } }",
+		     name.c_str(), mantN, static_cast<int>(expoN));
+  } else {
+    sprintf(line, "\\vdef{%s}   {\\ensuremath{{%5.0f \\times 10^{%d}} } }",
+	    name.c_str(), mantN, static_cast<int>(expoN));
+  }
+
+  return string(line);
+}
+
+
+// ----------------------------------------------------------------------
+string formatTex(double n, string name, string tag) {
+
+  char line[200];
+
+  if (TMath::IsNaN(n) ) {
+    sprintf(line, "\\vdef{%s:%s}   {\\ensuremath{{\\mathrm{NaN} } } }", name.c_str(), tag.c_str());
+  } else if ( n > 100. ) {
+    sprintf(line, "\\vdef{%s:%s}   {\\ensuremath{{%6.0f } } }", name.c_str(), tag.c_str(), n);
+  } else if ( n > 1. ) {
+    sprintf(line, "\\vdef{%s:%s}   {\\ensuremath{{%4.2f } } }", name.c_str(), tag.c_str(), n);
+  } else if ( n > 1.e-1) {
+    sprintf(line, "\\vdef{%s:%s}   {\\ensuremath{{%4.3f } } }", name.c_str(), tag.c_str(), n);
+  } else if ( n > 1.e-3) {
+    sprintf(line, "\\vdef{%s:%s}   {\\ensuremath{{%4.3f } } }", name.c_str(), tag.c_str(), n);
+  } else {
+    sprintf(line, "\\vdef{%s:%s}   {\\ensuremath{{0.0 } } }", name.c_str(), tag.c_str());
+  }
+
+  string result(line);
+  return result;
+}
+
+
+// ----------------------------------------------------------------------
+string formatTLV(const TLorentzVector &v, int mode) {
+  if (1 == mode) {
+    return string(Form("(%5.4f, %5.4f, %5.4f, E=%5.4f)", v.X(), v.Y(), v.Z(), v.E()));
+  } else if (2 == mode) {
+    return string(Form("(%5.4f, %5.4f, %5.4f, m=%5.4f)", v.X(), v.Y(), v.Z(), v.M()));
+  }
+  return string(Form("(%5.4f, %+3.2f, %+3.2f)", v.Perp(), v.Eta(), v.Phi()));
+}
+
+
+// ----------------------------------------------------------------------
+string formatTVector3(const TVector3 &v, int mode) {
+  if (1 == mode) {
+    return string(Form("(%5.4f, %5.4f, %5.4f)", v.X(), v.Y(), v.Z()));
+  }
+  return string(Form("(%5.4f, %+3.2f, %+3.2f)", v.Perp(), v.Eta(), v.Phi()));
+}
+
 
 // ----------------------------------------------------------------------
 double median(TH1 *h1) {
@@ -504,6 +984,60 @@ void cleanupString(string &s) {
 // ----------------------------------------------------------------------
 bool bothAreSpaces(char lhs, char rhs) {
   return (lhs == rhs) && (lhs == ' ');
+}
+
+
+// ----------------------------------------------------------------------=
+void rmSubString(string &sInput, const string &sub) {
+  string::size_type foundpos = sInput.find(sub);
+  if (foundpos != string::npos)  {
+    sInput.erase(sInput.begin() + foundpos, sInput.begin() + foundpos + sub.length());
+  }
+}
+
+// ----------------------------------------------------------------------=
+void rmPath(string &sInput) {
+  string::size_type foundpos = sInput.find("/");
+  while(string::npos != foundpos) {
+    sInput.erase(sInput.begin(), sInput.begin() + foundpos + 1);
+    foundpos = sInput.find("/");
+  }
+}
+
+// ----------------------------------------------------------------------
+vector<string> glob(string basedir, string basename) {
+  cout << "Looking in " << basedir << " for " << basename << endl;
+  vector<string> lof;
+  TString fname;
+  const char *file;
+  TSystem *lunix = gSystem; //new TUnixSystem();
+  void *pDir = lunix->OpenDirectory(basedir.c_str());
+  while ((file = lunix->GetDirEntry(pDir))) {
+    fname = file;
+    if (fname.Contains(basename.c_str())) {
+      lof.push_back(string(fname));
+    }
+  }
+  return lof;
+}
+
+
+// ----------------------------------------------------------------------
+vector<string> split(const string &s, char delim) {
+  vector<string> elems;
+  split(s, delim, elems);
+  return elems;
+}
+
+
+// ----------------------------------------------------------------------
+void /*vector<string>&*/ split(const string &s, char delim, vector<string> &elems) {
+  stringstream ss(s);
+  string item;
+  while (getline(ss, item, delim)) {
+    elems.push_back(item);
+  }
+  //  return elems;
 }
 
 
