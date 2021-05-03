@@ -192,15 +192,25 @@ double getValueByLabel(TH1 *h, string label) {
 // ----------------------------------------------------------------------
 void addOverflow(TH1D *h) {
   int nbins = h->GetNbinsX();
+  double err0 = h->GetBinError(nbins);
+  double err1 = h->GetBinError(nbins+1);
+  double errTot = TMath::Sqrt(err0*err0 + err1*err1);
   h->SetBinContent(nbins, h->GetBinContent(nbins) + h->GetBinContent(nbins+1));
+  h->SetBinError(nbins, errTot);
   h->SetBinContent(nbins+1, 0.);
+  h->SetBinError(nbins+1, 0.);
 }
 
 
 // ----------------------------------------------------------------------
 void addUnderflow(TH1D *h) {
+  double err0 = h->GetBinError(0);
+  double err1 = h->GetBinError(1);
+  double errTot = TMath::Sqrt(err0*err0 + err1*err1);
   h->SetBinContent(1, h->GetBinContent(1) + h->GetBinContent(0));
+  h->SetBinError(1, errTot);
   h->SetBinContent(0, 0.);
+  h->SetBinError(0, 0.);
 }
 
 // ----------------------------------------------------------------------
@@ -215,10 +225,23 @@ void zeroNegativeEntries(TH1D *h) {
 
 // ----------------------------------------------------------------------
 void showOverflow(TH1 *h) {
-  h->SetBinContent(h->GetNbinsX(), h->GetBinContent(h->GetNbinsX()) + h->GetBinContent(h->GetNbinsX()+1));
-  h->SetBinContent(h->GetNbinsX()+1, 0.);
+  int nbins = h->GetNbinsX();
+  double err0 = h->GetBinError(nbins);
+  double err1 = h->GetBinError(nbins+1);
+  double errTot = TMath::Sqrt(err0*err0 + err1*err1);
+  h->SetBinContent(nbins, h->GetBinContent(nbins) + h->GetBinContent(nbins+1));
+  h->SetBinError(nbins, errTot);
+  h->SetBinContent(nbins+1, 0.);
+  h->SetBinError(nbins+1, 0.);
+
+
+  err0 = h->GetBinError(0);
+  err1 = h->GetBinError(1);
+  errTot = TMath::Sqrt(err0*err0 + err1*err1);
   h->SetBinContent(1, h->GetBinContent(1) + h->GetBinContent(0));
+  h->SetBinError(1, errTot);
   h->SetBinContent(0, 0.);
+  h->SetBinError(0, 0.);
 }
 
 

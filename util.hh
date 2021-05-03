@@ -57,8 +57,8 @@ void printNonZero(TH1*);
 void printAxesLabels(TH1*);
 double getValueByLabel(TH1 *h, std::string label);
 
-void addOverflow(TH1D *); // FIXME: add error propagation
-void addUnderflow(TH1D *); // FIXME: add error propagation
+void addOverflow(TH1D *);
+void addUnderflow(TH1D *);
 void zeroNegativeEntries(TH1D *);
 
 TLegend* newLegend(std::string title, double x1, double y1, double x2, double y2,
@@ -90,7 +90,7 @@ void setHist(TH1 *h, dataset *ds);
 void setHistTitles(TH1 *h, dataset *ds, const char *sx, const char *sy,
 		   float size = 0.05, float xoff = 1.1, float yoff = 1.1, float lsize = 0.05, int font = 42);
 
-void showOverflow(TH1 *h); // FIXME: add error propagation
+void showOverflow(TH1 *h);
 
 
 // -- RooFit
