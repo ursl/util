@@ -6,6 +6,7 @@
 #include "util.hh"
 #include "TMath.h"
 #include "TColor.h"
+#include "TStyle.h"
 #include "TCanvas.h"
 #include "TLatex.h"
 #include "TString.h"
@@ -1247,6 +1248,10 @@ void hpl(TH1 *hin, const char *options) {
   if (parse.Contains("ngridy", TString::kIgnoreCase)) {
     parse.ReplaceAll(TString("ngridy"), "");
     gPad->SetGridy(0);
+  }
+  if (parse.Contains("optstat0", TString::kIgnoreCase)) {
+    parse.ReplaceAll(TString("optstat0"), "");
+    gStyle->SetOptStat(0);
   }
 
   // -- Colors, fillstyle
