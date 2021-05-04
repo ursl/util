@@ -28,6 +28,7 @@ plotClass::plotClass(string dir, string files, string cuts, string setup) {
   fDirectory = dir;
   fSetup = setup;
   fMode = UNSET;
+  fSuffix = "";
 
   delete gRandom;
   gRandom = (TRandom*) new TRandom3;
@@ -64,6 +65,13 @@ plotClass::~plotClass() {
 
 
 // ----------------------------------------------------------------------
+// see http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=15054
+void plotClass::closeHistFile() {
+  fHistFile->Write();
+}
+
+
+// ----------------------------------------------------------------------
 void plotClass::makeAll(int bitmask) {
   cout << "wrong class function" << endl;
 }
@@ -72,8 +80,29 @@ void plotClass::makeAll(int bitmask) {
 // ----------------------------------------------------------------------
 void plotClass::setup(string ds) {
   fSample = ds;
-  string dir = "candAnaMuMu";
+  string dir = "";
   fTreeDir = dir;
+}
+
+
+// ----------------------------------------------------------------------
+void plotClass::changeSetup(string dir, string name, string setup) {
+  fHistFileName = Form("%s/%s.%s.root", dir.c_str(), name.c_str(), fSetup.c_str());
+  fNumbersFileName = fDirectory + Form("/%s.%s.txt", name.c_str(), fSetup.c_str());
+
+
+  fTexFileName = fNumbersFileName;
+  replaceAll(fTexFileName, ".txt", ".tex");
+
+  cout << "plotClass::changeSetup: " << endl
+       << "  name             = " << name << endl
+       << "  setup            = " << setup << endl
+       << "  fSetup           = " << fSetup << endl
+       << "  fSuffix          = " << fSuffix << endl
+       << "  fHistFileName    = " << fHistFileName << endl
+       << "  fNumbersFileName = " << fNumbersFileName << endl
+       << "  fTexFileName     = " << fTexFileName << endl
+       << endl;
 }
 
 
@@ -85,31 +114,6 @@ void plotClass::init() {
   system(Form("/bin/rm -f %s", fTexFileName.c_str()));
   cout << Form("open for TeX output: %s", fTexFileName.c_str()) << endl;
   fTEX.open(fTexFileName.c_str(), ios::app);
-}
-
-
-// ----------------------------------------------------------------------
-void plotClass::changeSetup(string dir, string name, string setup) {
-  fHistFileName = Form("%s/%s.%s.root", dir.c_str(), name.c_str(), fSuffix.c_str());
-  fNumbersFileName = fDirectory + Form("/%s.%s.txt", name.c_str(), fSuffix.c_str());
-
-
-  fTexFileName = fNumbersFileName;
-  replaceAll(fTexFileName, ".txt", ".tex");
-  // string old = fTexFileName;
-  // old += ".old";
-  // cout << "old: " << old << endl;
-  // system(Form("/bin/mv %s %s", fTexFileName.c_str(), old.c_str()));
-
-  cout << "plotClass::changeSetup: " << endl
-       << "  name             = " << name << endl
-       << "  setup            = " << setup << endl
-       << "  fSetup           = " << fSetup << endl
-       << "  fSuffix          = " << fSuffix << endl
-       << "  fHistFileName    = " << fHistFileName << endl
-       << "  fNumbersFileName = " << fNumbersFileName << endl
-       << "  fTexFileName     = " << fTexFileName << endl
-       << endl;
 }
 
 

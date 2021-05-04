@@ -69,6 +69,7 @@ public :
   virtual void   loadFiles(std::string afiles);
   TFile*         loadFile(std::string afiles);
 
+  void           closeHistFile();
 
   // -- display utilities
   void           cd(std::string dataset, std::string dir = "");
