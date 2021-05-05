@@ -42,7 +42,6 @@ plotClass::plotClass(string dir, string files, string cuts, string setup) {
   legge = 0;
 
   c0 = (TCanvas*)gROOT->FindObject("c0");
-  // if (!c0) c0 = new TCanvas("c0","--c0--",0,0,656,700);
   if (!c0) c0 = new TCanvas("c0","--c0--",0,0,1200,700);
 
 
