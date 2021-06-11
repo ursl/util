@@ -80,4 +80,4 @@ clean:
 	rm -f $(addprefix obj/,$(UTIL) $(DICT))
 	rm -f $(DICTHEADERS)
 	rm -f lib/*.pcm
-	rm -f lib/libutil.so
+	rm -f lib/libAnaUtil.so
