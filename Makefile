@@ -17,7 +17,7 @@ else
   ifdef CXXCOMPILER
     CXX         := $(CXXCOMPILER)
   else
-    CXX         := clang++
+    CXX         := c++
   endif
 endif
 
