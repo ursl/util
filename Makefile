@@ -34,6 +34,11 @@ GLIBS         += -lMinuit -lRooFitCore -lRooFit
 
 # -- Source code
 UTIL = util.o \
+       initFunc.o \
+       json.o \
+       AnalysisCuts.o \
+       AnalysisDistribution.o fitPsYield.o \
+       HistCutEfficiency.o \
        dataset.o \
        selpoint.o \
        plotClass.o \
