@@ -5,7 +5,7 @@
 # ======================================================================
 .PHONY: prep clean vars
 
-ROOTCINT      = $(ROOTSYS)/bin/rootcint
+ROOTCINT      = $(ROOTSYS)/bin/rootcling
 ROOTCFLAGS    = $(shell $(ROOTSYS)/bin/root-config --cflags)
 ROOTGLIBS     = $(shell $(ROOTSYS)/bin/root-config --glibs)
 ROOTLDFLAGS   = $(shell $(ROOTSYS)/bin/root-config --ldflags)
@@ -57,11 +57,12 @@ $(addprefix obj/,%.o) : %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 %Dict.cc : %.hh %LinkDef.h
-	$(ROOTCINT) -f $@ -c $(CXXFLAGS) $^
+	echo $(ROOTCINT) $@ $^
+	$(ROOTCINT) $@ $^
 	mv $(subst Dict.cc,Dict_rdict.pcm,$@) lib
 
 %Dict.cc : %.hh
-	$(ROOTCINT) -f $@ -c $(CXXFLAGS) $^
+	$(ROOTCINT) $@  $^
 	mv $(subst Dict.cc,Dict_rdict.pcm,$@) lib
 
 $(addprefix lib/,%.pcm) :
