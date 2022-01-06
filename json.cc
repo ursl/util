@@ -89,7 +89,6 @@ vector<string> json::transform(vector<string> dcs) {
   vector<string> runList, newList;
   string::size_type p1;
   string::size_type p2;
-  string::size_type p3;
   string run("{");
   for (unsigned int i = 0; i < dcs.size(); ++i) {
     p1 = dcs[i].find("\"");
