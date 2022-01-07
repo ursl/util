@@ -57,7 +57,6 @@ $(addprefix obj/,%.o) : %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 %Dict.cc : %.hh %LinkDef.h
-	echo $(ROOTCINT) $@ $^
 	$(ROOTCINT) $@ $^
 	mv $(subst Dict.cc,Dict_rdict.pcm,$@) lib
 

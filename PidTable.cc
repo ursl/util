@@ -21,13 +21,13 @@ PidTable::PidTable(int mode) {
   fMaxRun = 1000000;
   fMinEff = 99.;
   fMaxEff = -1.;
-  fHistMin = 0.; 
-  fHistMax = 1.1; 
+  fHistMin = 0.;
+  fHistMax = 1.1;
   fMinErr = 99.;
   fMaxErr = -1.;
   fVerbose = 1;
   fDataVector = new TList();
-  fMode = mode; 
+  fMode = mode;
 
   fRandom = new TF1("f1", "gaus", -10., 10.);
   fRandom->SetParameters(1., 0., 1.);
@@ -44,12 +44,12 @@ PidTable::PidTable(const char *s, int mode) {
   fVerbose = 1;
   fMinEff = 99.;
   fMaxEff = -1.;
-  fHistMin = 0.; 
-  fHistMax = 1.1; 
+  fHistMin = 0.;
+  fHistMax = 1.1;
   fMinErr = 99.;
   fMaxErr = -1.;
   fDataVector = new TList();
-  fMode = mode; 
+  fMode = mode;
 
   fRandom = new TF1("f1", "gaus", -10., 10.);
   fRandom->SetParameters(1., 0., 1.);
@@ -63,20 +63,20 @@ PidTable::PidTable(const char *s, int mode) {
 // ----------------------------------------------------------------------
 void PidTable::readFromEffHist(TDirectory *f, const char *histName, double phiMin, double phiMax, int mode) {
   setHistName(histName);
-  
+
   TH2D *h     = (TH2D*)f->Get(histName);
   if (!h) {
-    if (fVerbose > -1) cout << "Error: Could not retrieve histogram " << histName << endl; 
+    if (fVerbose > -1) cout << "Error: Could not retrieve histogram " << histName << endl;
   }
   else {
-    if (fVerbose > 0) cout << "Reading from " << histName << endl; 
+    if (fVerbose > 0) cout << "Reading from " << histName << endl;
     for (Int_t ix = 1; ix <= h->GetNbinsX(); ++ix) {
       for (Int_t iy = 1; iy <= h->GetNbinsY(); ++iy) {
-	PidData *datum = new PidData(h->GetYaxis()->GetBinLowEdge(iy), h->GetYaxis()->GetBinLowEdge(iy+1), 
-				     h->GetXaxis()->GetBinLowEdge(ix), h->GetXaxis()->GetBinLowEdge(ix+1), 
-				     phiMin, phiMax, 
-				     h->GetCellContent(ix, iy), h->GetCellError(ix, iy), 
-				     -99., -99., -99., -99., mode); // ?? should this maybe be initialized to zero? 
+	PidData *datum = new PidData(h->GetYaxis()->GetBinLowEdge(iy), h->GetYaxis()->GetBinLowEdge(iy+1),
+				     h->GetXaxis()->GetBinLowEdge(ix), h->GetXaxis()->GetBinLowEdge(ix+1),
+				     phiMin, phiMax,
+				     h->GetCellContent(ix, iy), h->GetCellError(ix, iy),
+				     -99., -99., -99., -99., mode); // ?? should this maybe be initialized to zero?
         fDataVector->Add(datum);
       }
     }
@@ -87,31 +87,31 @@ void PidTable::readFromEffHist(TDirectory *f, const char *histName, double phiMi
 // ----------------------------------------------------------------------
 void PidTable::readFromHist(TDirectory *f, const char *passName, const char *totName, double phiMin, double phiMax, int mode) {
   setHistName(passName);
-  
+
   TH2D *hPass = (TH2D*)f->Get(passName);
   TH2D *hTot  = (TH2D*)f->Get(totName);
   if (!hPass) {
-    if (fVerbose > -1) cout << "Error: Could not retrieve histogram " << passName << endl; 
+    if (fVerbose > -1) cout << "Error: Could not retrieve histogram " << passName << endl;
   }
   if (!hTot) {
-    if (fVerbose > -1) cout << "Error: Could not retrieve histogram " << totName << endl; 
+    if (fVerbose > -1) cout << "Error: Could not retrieve histogram " << totName << endl;
   }
   if (hTot && hPass) {
-    if (fVerbose > 0) cout << "Reading from " << passName  << " and " << totName << endl; 
+    if (fVerbose > 0) cout << "Reading from " << passName  << " and " << totName << endl;
     double n, N, nE, NE;
-    
+
     for (Int_t ix = 1; ix <= hPass->GetNbinsX(); ++ix) {
       for (Int_t iy = 1; iy <= hPass->GetNbinsY(); ++iy) {
-      
+
 	n = hPass->GetCellContent(ix, iy);
-	N = hTot->GetCellContent(ix, iy);	
+	N = hTot->GetCellContent(ix, iy);
 
 	nE = hPass->GetCellError(ix, iy);
-	NE = hTot->GetCellError(ix, iy);	
-	 
-	PidData *datum = new PidData(hPass->GetYaxis()->GetBinLowEdge(iy), hPass->GetYaxis()->GetBinLowEdge(iy+1), 
-				     hPass->GetXaxis()->GetBinLowEdge(ix), hPass->GetXaxis()->GetBinLowEdge(ix+1), 
-				     phiMin, phiMax, 
+	NE = hTot->GetCellError(ix, iy);
+
+	PidData *datum = new PidData(hPass->GetYaxis()->GetBinLowEdge(iy), hPass->GetYaxis()->GetBinLowEdge(iy+1),
+				     hPass->GetXaxis()->GetBinLowEdge(ix), hPass->GetXaxis()->GetBinLowEdge(ix+1),
+				     phiMin, phiMax,
 				     -99., -99., n, nE, N, NE, mode);
         fDataVector->Add(datum);
 	if (datum->getE() < fMinEff) fMinEff = datum->getE();
@@ -126,7 +126,7 @@ void PidTable::readFromHist(TDirectory *f, const char *passName, const char *tot
 
 // ----------------------------------------------------------------------
 void PidTable::readFromFile(const char *filename, int mode) {
-  
+
   TString fullName;
   if (filename[0] == '/') {
     fullName = filename;
@@ -148,7 +148,7 @@ void PidTable::readFromFile(const char *filename, int mode) {
   while (is.getline(buffer, 200, '\n')) {
     if (buffer[0] == '#') {continue;}
     if (buffer[0] == '/') {continue;}
-    sscanf(buffer, "%f %f %f %f %f %f %f %f %f %f %f %f", 
+    sscanf(buffer, "%f %f %f %f %f %f %f %f %f %f %f %f",
 	   &pmin, &pmax, &tmin, &tmax, &fmin, &fmax, &e, &se, &pass, &passE, &total, &totalE);
     PidData *datum = new PidData(pmin, pmax, tmin, tmax, fmin, fmax, e, se, pass, passE, total, totalE, mode);
     fDataVector->Add(datum);
@@ -159,7 +159,7 @@ void PidTable::readFromFile(const char *filename, int mode) {
     readLines++;
   }
   if (readLines < 1) {
-    if (fVerbose > -1) cout << "  Nothing read from " << fullName << endl; 
+    if (fVerbose > -1) cout << "  Nothing read from " << fullName << endl;
   }
   is.close();
 }
@@ -179,9 +179,9 @@ void PidTable::printAll(int i) {
 double PidTable::getMean() {
   int cells(0);
   double pass(0.), total(0.);
-  double a(0.), wi(0.), w(0.), meanE(0.), meanS(0.), meanU(0.);
+  double a(0.), wi(0.), w(0.), meanE(0.), meanS(0.);
   double tmin(9999.), tmax(-9999.), pmin(9999.), pmax(-9999.);
-  
+
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     pass  += iTable->getPass();
@@ -211,7 +211,7 @@ double PidTable::getMean() {
 
 // ----------------------------------------------------------------------
 void PidTable::scale(double scaleFactor) {
-  
+
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     iTable->setPass(scaleFactor*(iTable->getPass()));
@@ -228,7 +228,7 @@ void PidTable::print(ostream &OUT) {
   double pass(0.), total(0.);
   double a(0.), wi(0.), w(0.), meanE(0.), meanS(0.), meanU(0.);
   double tmin(9999.), tmax(-9999.), pmin(9999.), pmax(-9999.);
-  
+
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     pass  += iTable->getPass();
@@ -288,7 +288,7 @@ void PidTable::print(ostream &OUT) {
 void PidTable::setEffAndErrMode(int mode) {
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
-    iTable->setEffAndErrMode(mode); 
+    iTable->setEffAndErrMode(mode);
   }
 }
 
@@ -296,7 +296,7 @@ void PidTable::setEffAndErrMode(int mode) {
 void PidTable::recalculate() {
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
-    iTable->calcEffAndErr(); 
+    iTable->calcEffAndErr();
   }
 }
 
@@ -318,7 +318,7 @@ void PidTable::setAxes(int pA, double *pAxis, int tA, double *tAxis, int fA, dou
 
 
 // ----------------------------------------------------------------------
-void PidTable::setAxes(int nP, double pmin, double pmax, int nT, double tmin, double tmax, 
+void PidTable::setAxes(int nP, double pmin, double pmax, int nT, double tmin, double tmax,
 		       int nF, double fmin, double fmax) {
   double pbin = (pmax-pmin)/nP;
   double tbin = (tmax-tmin)/nT;
@@ -329,9 +329,9 @@ void PidTable::setAxes(int nP, double pmin, double pmax, int nT, double tmin, do
   for (Int_t ip = 0; ip < nP; ++ip) {
     for (Int_t it = 0; it < nT; ++it) {
       for (Int_t ifi = 0; ifi < nF; ++ifi) {
-	PidData *datum = new PidData(pmin + ip*pbin, pmin + (ip+1)*pbin, 
-				     tmin + it*tbin, tmin + (it+1)*tbin, 
-				     fmin +ifi*fbin, fmin +(ifi+1)*fbin, 
+	PidData *datum = new PidData(pmin + ip*pbin, pmin + (ip+1)*pbin,
+				     tmin + it*tbin, tmin + (it+1)*tbin,
+				     fmin +ifi*fbin, fmin +(ifi+1)*fbin,
 				     0., 0., 0., 0., 0., 0.);
 	fDataVector->Add(datum);
       }
@@ -371,7 +371,7 @@ void PidTable::fillEff(PidTable &b) {
 
 
 // ----------------------------------------------------------------------
-void PidTable::smear(int mode) { 
+void PidTable::smear(int mode) {
   double bla(0.);
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
@@ -395,10 +395,10 @@ void PidTable::smear(int mode) {
     }
   }
 }
-  
+
 
 // ----------------------------------------------------------------------
-void PidTable::shiftRel(double shift) { 
+void PidTable::shiftRel(double shift) {
   double bla(0.);
   if (TMath::Abs(shift) > 0.0001) {
     TIter next(fDataVector); PidData *iTable;
@@ -417,10 +417,10 @@ void PidTable::shiftRel(double shift) {
     cout << fFileName << " no shifting, because shift = " << shift << endl;
   }
 }
-  
+
 
 // ----------------------------------------------------------------------
-int PidTable::idD(double p, double t, double f) { 
+int PidTable::idD(double p, double t, double f) {
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if (iTable->isCell(p, t, f)) {
@@ -437,13 +437,13 @@ int PidTable::idD(double p, double t, double f) {
 
 // ----------------------------------------------------------------------
 // ?? double check that phi works in CMS??
-int PidTable::idR(double p, double t, double f) { 
+int PidTable::idR(double p, double t, double f) {
   return (idD(p, t*57.2958, f*57.2958/2));
 }
 
 
 // ----------------------------------------------------------------------
-double PidTable::effD(double p, double t, double f, int sigma) { 
+double PidTable::effD(double p, double t, double f, int sigma) {
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if (iTable->isCell(p, t, f)) {
@@ -461,7 +461,7 @@ double PidTable::effR(double momentum, double theta, double phi, int sigma) {
 
 
 // ----------------------------------------------------------------------
-double PidTable::errD(double p, double t, double f, int run) { 
+double PidTable::errD(double p, double t, double f, int run) {
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if (iTable->isCell(p, t, f)) return iTable->getS();
@@ -507,7 +507,7 @@ double PidTable::effPhiRange(double momentum, double theta, double fmin, double 
 
 // ----------------------------------------------------------------------
 double PidTable::passPhiRange(double momentum, double theta, double fmin, double fmax) {
-  PidData a; 
+  PidData a;
   a.setEffAndErrMode(fMode);
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
@@ -568,7 +568,7 @@ double PidTable::errR(double momentum, double theta, double phi, int run) {
 // ----------------------------------------------------------------------
 void PidTable::dumpToFile(const char *psname) {
   if (fVerbose > 0) cout << "Dumping table to file " << psname << endl;
-  fFileName = psname; 
+  fFileName = psname;
   ofstream EFF(psname);
   print(EFF);
   TIter next(fDataVector); PidData *iTable;
@@ -593,19 +593,19 @@ void PidTable::fitEmptyBins(double cut) {
     cout << "do something with oldTheta: " << oldTheta << endl;
   }
 }
-   
+
 // ----------------------------------------------------------------------
 void PidTable::contLowEfficiencyBins(double cut) {
   if (fVerbose > 0) cout << "continue table with contLowEfficiencyBins, cut: " << cut << endl;
   double oldEff(0.), oldErr(0.);
   TIter next(fDataVector); PidData *iTable;
   PidData *begin = (PidData*)fDataVector->First();
-  double plo = begin->getPmax(); 
+  double plo = begin->getPmax();
   cout << "maximum momentum of first cell: " << plo << endl;
   while ((iTable = (PidData*)next())) {
     if ((iTable->getE() < cut) && (iTable != begin)) {
       cout << "hello: " << iTable->getE() << " . " << oldEff << endl;
-      iTable->print(); 
+      iTable->print();
       cout << "hello: " << iTable->getE() << " . " << oldEff << endl;
       iTable->setE(oldEff);
       iTable->setS(oldErr);
@@ -617,14 +617,14 @@ void PidTable::contLowEfficiencyBins(double cut) {
 	oldErr = iTable->getS();
       }
     } else {
-      // -- when looking at first momentum cell, reset to zero. 
+      // -- when looking at first momentum cell, reset to zero.
       oldEff = 0.;
       oldErr = 0.;
     }
   }
 }
 
- 
+
 // ----------------------------------------------------------------------
 void PidTable::contEmptyBins(double cut) {
   if (fVerbose > 0) cout << "continue table" << endl;
@@ -643,7 +643,7 @@ void PidTable::contEmptyBins(double cut) {
 	oldEff = iTable->getE();
 	oldErr = iTable->getS();
       }
-      // -- when looking at last momentum cell, reset to zero. 
+      // -- when looking at last momentum cell, reset to zero.
       if (iTable->getPmax() > 24.9) {
 	oldEff = 0.;
 	oldErr = 0.;
@@ -664,7 +664,7 @@ void PidTable::compare(PidTable &cmp) {
   }
 }
 
-    
+
 // ----------------------------------------------------------------------
 void PidTable::setPidTablesDir(const char*s) {
   fPidTablesDir = s;
@@ -685,7 +685,7 @@ PidData* PidTable::getData(double p, double t, double f) {
 // ----------------------------------------------------------------------
 PidData* PidTable::getDataRange(PidData d) {
   PidData *a = new PidData();
-  double eps(1e-6); 
+  double eps(1e-6);
   a->setEffAndErrMode(fMode);
   TIter next(fDataVector); PidData *iTable;
   if (fVerbose > 1)  cout << "d: " << d.getPmin() << "/" << d.getPmax() << " .. " << d.getTmin() << "/" << d.getTmax() << endl;
@@ -704,7 +704,7 @@ PidData* PidTable::getDataRange(PidData d) {
 
 // ----------------------------------------------------------------------
 PidData* PidTable::getDataRange(double pmin, double pmax, double tmin, double tmax, double fmin, double fmax) {
-  double eps(1e-6); 
+  double eps(1e-6);
   PidData *a = new PidData(pmin, pmax, tmin, tmax, fmin, fmax);
   a->setEffAndErrMode(fMode);
   TIter next(fDataVector); PidData *iTable;
@@ -735,11 +735,11 @@ TH1D* PidTable::getMomentumHist(double tmin, double tmax, double fmin, double fm
     pmax = (ibins)*(Pmax-Pmin)/Pbin;
     a = getDataRange(pmin, pmax, tmin, tmax, fmin, fmax);
     cout << *a << endl;
-    cout << " p = " << pmin << "  " << pmax 
+    cout << " p = " << pmin << "  " << pmax
 	 << " (" << (int)(a->getPctr()/Pmax*Pbin) << ")"
 	 << " (" << a->getPctr() << ")"
-	 << " t = " << tmin << "  " << tmax 
-	 << " f = " << fmin << "  " << fmax 
+	 << " t = " << tmin << "  " << tmax
+	 << " f = " << fmin << "  " << fmax
 	 << " e = " << a->getE() << " +/- " << a->getS() << endl;
     h->SetBinContent((int)(a->getPctr()/Pmax*Pbin), a->getE());
     h->SetBinError((int)(a->getPctr()/Pmax*Pbin), a->getS());
@@ -757,7 +757,7 @@ void PidTable::combine(PidTable &b) {
     if (pData) {
       if (pData->getPass() > -1) {
 	iTable->combine(pData->getPass(), pData->getTot());
-      } else {	
+      } else {
 	iTable->merge(pData);
       }
       if (iTable->getE() < fMinEff) fMinEff = iTable->getE();
@@ -767,9 +767,9 @@ void PidTable::combine(PidTable &b) {
     }
     else {
       if (fVerbose > 1)
-	cout << "b does not contain PidData for p = " << (iTable->getPmin() + iTable->getPmax())/2. 
-	     << ", t = " << (iTable->getTmin() + iTable->getTmax())/2. 
-	     << ", f = " << (iTable->getFmin() + iTable->getFmax())/2. 
+	cout << "b does not contain PidData for p = " << (iTable->getPmin() + iTable->getPmax())/2.
+	     << ", t = " << (iTable->getTmin() + iTable->getTmax())/2.
+	     << ", f = " << (iTable->getFmin() + iTable->getFmax())/2.
 	     << endl;
     }
   }
@@ -790,9 +790,9 @@ void PidTable::divide(PidTable &b) {
     }
     else {
       if (fVerbose > 1)
-	cout << "other Table does not contain PidData for p = " << (iTable->getPmin() + iTable->getPmax())/2. 
-	     << ", t = " << (iTable->getTmin() + iTable->getTmax())/2. 
-	     << ", f = " << (iTable->getFmin() + iTable->getFmax())/2. 
+	cout << "other Table does not contain PidData for p = " << (iTable->getPmin() + iTable->getPmax())/2.
+	     << ", t = " << (iTable->getTmin() + iTable->getTmax())/2.
+	     << ", f = " << (iTable->getFmin() + iTable->getFmax())/2.
 	     << endl;
     }
   }
@@ -814,9 +814,9 @@ void PidTable::subtract(PidTable &b) {
     }
     else {
       if (fVerbose > 1)
-	cout << "other Table does not contain PidData for p = " << (iTable->getPmin() + iTable->getPmax())/2. 
-	     << ", t = " << (iTable->getTmin() + iTable->getTmax())/2. 
-	     << ", f = " << (iTable->getFmin() + iTable->getFmax())/2. 
+	cout << "other Table does not contain PidData for p = " << (iTable->getPmin() + iTable->getPmax())/2.
+	     << ", t = " << (iTable->getTmin() + iTable->getTmax())/2.
+	     << ", f = " << (iTable->getFmin() + iTable->getFmax())/2.
 	     << endl;
     }
   }
@@ -850,17 +850,17 @@ void PidTable::compress() {
   TList *newVector = new TList();
   PidData *n, *nn, *t;
   TIter next(fDataVector); PidData *iTable;
-  PidData *end = (PidData*)fDataVector->Last(); 
+  PidData *end = (PidData*)fDataVector->Last();
   while ((iTable = (PidData*)next())) {
     if (iTable->isZero()) {
       double theta = iTable->getTmax();
       double phi   = iTable->getFmax();
       n = iTable + 1;
       if (fVerbose > 1) cout << "Zero: " << *iTable << endl
-			     << "Next: " << *n << endl; 
+			     << "Next: " << *n << endl;
 
-      while (n->isZero() 
-	     && (n->getTctr() < theta) 
+      while (n->isZero()
+	     && (n->getTctr() < theta)
 	     && (n->getFctr() < phi)
 	     && (iTable != end)
 	     ) {
@@ -868,9 +868,9 @@ void PidTable::compress() {
 	n += 1;
       }
       nn = n - 1;
-      t = new PidData(iTable->getPmin(), nn->getPmax(), 
-		      iTable->getTmin(), nn->getTmax(), 
-		      iTable->getFmin(), nn->getFmax(), 
+      t = new PidData(iTable->getPmin(), nn->getPmax(),
+		      iTable->getTmin(), nn->getTmax(),
+		      iTable->getFmin(), nn->getFmax(),
 		      0., 0., 0., 0., 0., 0.);
       if (iTable != end) {
 	iTable = nn;
@@ -895,7 +895,7 @@ void PidTable::compress() {
 
 
 // ----------------------------------------------------------------------
-void PidTable::effHist(TH1 *h, double pmin, double pmax, double tmin, double tmax, 
+void PidTable::effHist(TH1 *h, double pmin, double pmax, double tmin, double tmax,
 		       double fmin, double fmax) {
   int drawIt(0);
   if (0 == h) {
@@ -925,7 +925,7 @@ void PidTable::effHist(TH1 *h, double pmin, double pmax, double tmin, double tma
 
 
 // ----------------------------------------------------------------------
-void PidTable::errHist(TH1 *h, double pmin, double pmax, double tmin, double tmax, 
+void PidTable::errHist(TH1 *h, double pmin, double pmax, double tmin, double tmax,
 		       double fmin, double fmax) {
   int drawIt(0);
   if (0 == h) {
@@ -954,7 +954,7 @@ void PidTable::errHist(TH1 *h, double pmin, double pmax, double tmin, double tma
 
 
 // ----------------------------------------------------------------------
-void PidTable::relErrHist(TH1 *h, double pmin, double pmax, double tmin, double tmax, 
+void PidTable::relErrHist(TH1 *h, double pmin, double pmax, double tmin, double tmax,
 			  double fmin, double fmax) {
   int drawIt(0);
   if (0 == h) {
@@ -983,7 +983,7 @@ void PidTable::relErrHist(TH1 *h, double pmin, double pmax, double tmin, double 
 
 // ----------------------------------------------------------------------
 void PidTable::projectP(TH1 *h, double tmin, double tmax, double fmin, double fmax, int absVal) {
-  
+
   int drawIt(0);
 
   if (0 == h) {
@@ -998,24 +998,24 @@ void PidTable::projectP(TH1 *h, double tmin, double tmax, double fmin, double fm
   }
 
   PidData *a, *b;
-  for (int ix = 1; ix <= h->GetNbinsX(); ++ix) {    
-    a = getDataRange(h->GetBinLowEdge(ix), h->GetBinLowEdge(ix+1), 
-		     tmin, tmax, fmin, fmax); 
+  for (int ix = 1; ix <= h->GetNbinsX(); ++ix) {
+    a = getDataRange(h->GetBinLowEdge(ix), h->GetBinLowEdge(ix+1),
+		     tmin, tmax, fmin, fmax);
     if (absVal == 1) {
-      b = getDataRange(h->GetBinLowEdge(ix), h->GetBinLowEdge(ix+1), 
-		       -tmax, -tmin, fmin, fmax); 
+      b = getDataRange(h->GetBinLowEdge(ix), h->GetBinLowEdge(ix+1),
+		       -tmax, -tmin, fmin, fmax);
       a->merge(b);
       delete b;
     }
-    h->SetBinContent(ix, a->getEff()); 
-    h->SetBinError(ix, a->getErr()); 
+    h->SetBinContent(ix, a->getEff());
+    h->SetBinError(ix, a->getErr());
     delete a;
   }
 
   if (drawIt) {
     h->Draw();
   }
-  
+
 }
 
 
@@ -1036,11 +1036,11 @@ void PidTable::projectT(TH1 *h, double pmin, double pmax, double fmin, double fm
 
   PidData *a;
   for (int ix = 1; ix <= h->GetNbinsX(); ++ix) {
-    a = getDataRange(pmin, pmax, 
-		     h->GetBinLowEdge(ix), h->GetBinLowEdge(ix+1), 
-		     fmin, fmax); 
-    h->SetBinContent(ix, a->getEff()); 
-    h->SetBinError(ix, a->getErr()); 
+    a = getDataRange(pmin, pmax,
+		     h->GetBinLowEdge(ix), h->GetBinLowEdge(ix+1),
+		     fmin, fmax);
+    h->SetBinContent(ix, a->getEff());
+    h->SetBinError(ix, a->getErr());
     delete a;
   }
 
@@ -1054,8 +1054,8 @@ void PidTable::eff2d(TH2 *h, double fmin, double fmax) {
   h->Reset();
   for (Int_t ix = 1; ix <= h->GetNbinsX(); ++ix) {
     for (Int_t iy = 1; iy <= h->GetNbinsY(); ++iy) {
-      e = effPhiRange(0.5*(h->GetYaxis()->GetBinLowEdge(iy) + h->GetYaxis()->GetBinLowEdge(iy+1)), 
-		      0.5*(h->GetXaxis()->GetBinLowEdge(ix) + h->GetXaxis()->GetBinLowEdge(ix+1)), 
+      e = effPhiRange(0.5*(h->GetYaxis()->GetBinLowEdge(iy) + h->GetYaxis()->GetBinLowEdge(iy+1)),
+		      0.5*(h->GetXaxis()->GetBinLowEdge(ix) + h->GetXaxis()->GetBinLowEdge(ix+1)),
 		      fmin, fmax);
       h->SetCellContent(ix, iy, e);
     }
@@ -1120,12 +1120,12 @@ void PidTable::tot2d(TH2 *h, double fmin, double fmax) {
 TH2D* PidTable::get2dHist(const char *hname, const char *title, int mode) {
   if (0 == mode) {
     TH2D *h = new TH2D(hname, title, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
-    h->SetMinimum(fHistMin); 
-    h->SetMaximum(fHistMax); 
+    h->SetMinimum(fHistMin);
+    h->SetMaximum(fHistMax);
     return h;
   } else {
 
-    double xBins[50], yBins[50]; 
+    double xBins[50], yBins[50];
     set<double> etaBins, ptBins;
     TIter next(fDataVector); PidData *iTable;
     while ((iTable = (PidData*)next())) {
@@ -1135,18 +1135,18 @@ TH2D* PidTable::get2dHist(const char *hname, const char *title, int mode) {
       ptBins.insert(iTable->getPmin());
       ptBins.insert(iTable->getPmax());
     }
-    
+
     set<double>::iterator it;
-    int i(0); 
+    int i(0);
     for (it = etaBins.begin(); it != etaBins.end(); it++) {
-      xBins[i] = *it; 
-      ++i; 
+      xBins[i] = *it;
+      ++i;
     }
 
-    i = 0; 
+    i = 0;
     for (it = ptBins.begin(); it != ptBins.end(); it++) {
-      yBins[i] = *it; 
-      ++i; 
+      yBins[i] = *it;
+      ++i;
     }
 
     for (unsigned int j = 0; j < etaBins.size(); ++j) {
@@ -1164,7 +1164,7 @@ TH2D* PidTable::get2dHist(const char *hname, const char *title, int mode) {
 
 
 // ----------------------------------------------------------------------
-void PidTable::drawEff(const char *s, double fmin, double fmax) { 
+void PidTable::drawEff(const char *s, double fmin, double fmax) {
   char name[100];
   sprintf(name, "%s", fHistName.Data());
   TH2D *h = new TH2D("PidTableH2", name, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
@@ -1177,7 +1177,7 @@ void PidTable::drawEff(const char *s, double fmin, double fmax) {
 
 // ----------------------------------------------------------------------
 // ?? What is this?? This is wrong!!
-void PidTable::drawTableEff(double fi, const char *s) { 
+void PidTable::drawTableEff(double fi, const char *s) {
   char name[100];
   sprintf(name, "Table Eff: phi = %5.3f", fi);
   TH2D *h = new TH2D("PidTableH2", name, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
@@ -1197,7 +1197,7 @@ void PidTable::drawTableEff(double fi, const char *s) {
 
 
 // ----------------------------------------------------------------------
-void PidTable::drawErr(const char *s, double fmin, double fmax) { 
+void PidTable::drawErr(const char *s, double fmin, double fmax) {
   char name[100];
   sprintf(name, "Err: phi = %5.3f ... %5.3f", fmin, fmax);
   TH2D *h = new TH2D("PidTableH2", name, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
@@ -1207,7 +1207,7 @@ void PidTable::drawErr(const char *s, double fmin, double fmax) {
 
 
 // ----------------------------------------------------------------------
-void PidTable::drawTot(const char *s, double fmin, double fmax) { 
+void PidTable::drawTot(const char *s, double fmin, double fmax) {
   char name[100];
   sprintf(name, "Total: phi = %5.3f ... %5.3f", fmin, fmax);
   TH2D *h = new TH2D("PidTableH2", name, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
@@ -1217,7 +1217,7 @@ void PidTable::drawTot(const char *s, double fmin, double fmax) {
 
 
 // ----------------------------------------------------------------------
-void PidTable::drawPass(const char *s, double fmin, double fmax) { 
+void PidTable::drawPass(const char *s, double fmin, double fmax) {
   char name[100];
   sprintf(name, "Pass: phi = %5.3f ... %5.3f", fmin, fmax);
   TH2D *h = new TH2D("PidTableH2", name, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
@@ -1230,7 +1230,7 @@ void PidTable::shiftPmax(double oldMax, double newMax) {
 
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
-    if (iTable->getPmax() > oldMax) iTable->setPmax(newMax); 
+    if (iTable->getPmax() > oldMax) iTable->setPmax(newMax);
   }
 
 }
@@ -1240,7 +1240,7 @@ void PidTable::shiftTmax(double oldMax, double newMax) {
 
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
-    if (iTable->getTmax() > oldMax) iTable->setTmax(newMax); 
+    if (iTable->getTmax() > oldMax) iTable->setTmax(newMax);
   }
 
 }

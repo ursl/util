@@ -96,7 +96,7 @@ public:
 
 
   TF1* getFunction(std::string name);
-  TF1* listFunctions();
+  void listFunctions();
 
 private:
   int         fVerbose;
@@ -110,7 +110,7 @@ private:
   Results     fSummary;
 
   std::vector<double> fPar, fParE;
-  double         fCombMax, fCombS2All, fCombS2AllE;
+  double         fCombMax;
   std::map<std::string, TF1*> fFunctions;
 };
 

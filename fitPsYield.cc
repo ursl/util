@@ -311,8 +311,10 @@ void fitPsYield::fit0_Bu2JpsiKp(psd *res, int limitpars, string pdfprefix, doubl
   fpIF->fHi = hi;
 
   cout << "==> fitPsYield::fit0_Bu2JpsiKp> FITTING " << h->GetName() << " with limitpars = " << limitpars << endl;
-  double xmin(5.0), xmax(5.8), expoLo(5.15), expoHi(fpIF->fHi);
-  if (fVerbose) cout << "h->GetSumOfWeights() = " << h->GetSumOfWeights() << " h->GetEntries() = " << h->GetEntries() << endl;
+  double xmin(5.0), xmax(5.8);
+  if (fVerbose) cout << "h->GetSumOfWeights() = " << h->GetSumOfWeights()
+		     << " h->GetEntries() = " << h->GetEntries()
+		     << endl;
   //  if (fVerbose) fpIF->dumpParameters(f1);
   h->SetMinimum(0.001);
   h->SetAxisRange(fpIF->fLo, fpIF->fHi);
@@ -784,7 +786,7 @@ void fitPsYield::fit1_Bu2JpsiKp(psd *res, int limitpars, string pdfprefix, doubl
   fpIF->fHi = 5.85;
   cout << "==> fitPsYield::fit0_Bu2JpsiKp> FITTING " << h->GetName()
        << " with limitpars = " << limitpars << endl;
-  double xmin(5.0), xmax(5.8), expoLo(5.15), expoHi(fpIF->fHi);
+  double xmin(5.0), xmax(5.8);
   if (fVerbose) cout << "h->GetSumOfWeights() = " << h->GetSumOfWeights()
 		     << " h->GetEntries() = " << h->GetEntries() << endl;
   //  if (fVerbose) fpIF->dumpParameters(f1);
@@ -1138,7 +1140,6 @@ void fitPsYield::fit0_Bs2JpsiPhi(psd *res, int limitpars, string pdfprefix, doub
   if (h->GetXaxis()->GetXmax() < fpIF->fHi)  fpIF->fHi = h->GetXaxis()->GetXmax();
   cout << "==> fitPsYield::fit0_Bs2JpsiPhi> FITTING " << h->GetName()
        << " with limitpars = " << limitpars << endl;
-  double xmin(5.0), xmax(6.0), expoLo(5.15), expoHi(6.0);
   if (fVerbose) cout << "h->GetSumOfWeights() = " << h->GetSumOfWeights()
 		     << " h->GetEntries() = " << h->GetEntries() << endl;
   //  if (fVerbose) fpIF->dumpParameters(f1);
@@ -1423,11 +1424,10 @@ void fitPsYield::fit1_Bs2JpsiPhi(psd *res, int limitpars, string pdfprefix, doub
   fpIF->fHi = hi;
 
   cout << "==> fitPsYield::fit1_Bs2JpsiPhi> FITTING " << h->GetName() << " with limitpars = " << limitpars << endl;
-  double xmin(lo), xmax(hi), expoLo(5.0), expoHi(6.0);
-  if (fVerbose > -1) {
-    expoLo = 5.15;
-  }
-  if (fVerbose) cout << "h->GetSumOfWeights() = " << h->GetSumOfWeights() << " h->GetEntries() = " << h->GetEntries() << endl;
+  double xmin(lo), xmax(hi);
+  if (fVerbose) cout << "h->GetSumOfWeights() = " << h->GetSumOfWeights()
+		     << " h->GetEntries() = " << h->GetEntries()
+		     << endl;
   //  if (fVerbose) fpIF->dumpParameters(f1);
   h->SetMinimum(0.);
   h->SetAxisRange(5.0, fpIF->fHi);
@@ -1715,7 +1715,7 @@ void fitPsYield::fitBd2JpsiKstar(int limitpars, string pdfprefix, int whichfit) 
     return;
   }
 
-  void (fitPsYield::*pF)(psd *, int, string, bool);
+  void (fitPsYield::*pF)(psd *, int, string, bool) = &fitPsYield::fit0_Bd2JpsiKstar;
   if (0 == whichfit) pF = &fitPsYield::fit0_Bd2JpsiKstar;
 
   // -- prefit weighted combination:
@@ -1778,7 +1778,7 @@ void fitPsYield::fit0_Bd2JpsiKstar(psd *res, int limitpars, string pdfprefix, bo
   fpIF->fLo = 5.0;
   fpIF->fHi = 6.0;
   cout << "==> fitPsYield::fit0_Bd2JpsiKstar> FITTING " << h->GetName() << " with limitpars = " << limitpars << endl;
-  double xmin(4.9), xmax(6.0), expoLo(5.15), expoHi(6.0);
+  double xmin(4.9), xmax(6.0);
   if (fVerbose) cout << "h->GetSumOfWeights() = " << h->GetSumOfWeights() << " h->GetEntries() = " << h->GetEntries() << endl;
   //  if (fVerbose) fpIF->dumpParameters(f1);
   string fitopt = "lr";
@@ -1949,7 +1949,7 @@ TF1* fitPsYield::getFunction(string name) {
 
 
 // ----------------------------------------------------------------------
-TF1* fitPsYield::listFunctions() {
+void fitPsYield::listFunctions() {
   cout << "fitPsYield::listFunctions():" << endl;
   for (map<string, TF1*>::iterator it = fFunctions.begin(); it != fFunctions.end(); ++it) {
     cout << it->first << endl;
