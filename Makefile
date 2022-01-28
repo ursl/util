@@ -11,8 +11,9 @@ ROOTGLIBS     = $(shell $(ROOTSYS)/bin/root-config --glibs)
 ROOTLDFLAGS   = $(shell $(ROOTSYS)/bin/root-config --ldflags)
 
 ifdef SCRAM_ARCH
-  #  CXX         := $(shell scramv1 tool info gcc-cxxcompiler | grep CXX= | sed s/CXX=//)
-  CXX         := /cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/gcc/5.3.0/bin/gcc
+  # CXX         := $(shell scramv1 tool info gcc-cxxcompiler | grep CXX= | sed s/CXX=//)
+  # this likely is decrepit
+  # CXX         := /cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/gcc/5.3.0/bin/gcc
 else
   ifdef CXXCOMPILER
     CXX         := $(CXXCOMPILER)
@@ -21,7 +22,6 @@ else
   endif
 endif
 
-#?? CXXFLAGS      = -g -O0 -W -Wall -fPIC -pipe
 CXXFLAGS      = -g -O0 -Wall -fPIC -pipe
 CXXFLAGS     += $(ROOTCFLAGS)
 
