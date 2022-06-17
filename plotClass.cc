@@ -231,17 +231,15 @@ void plotClass::loadFiles(string afiles) {
     dataset *ds(0);
 
     if (string::npos != stype.find("data")) {
+      cout << "reading sfile ->" << sfile << "<-" << " stype ->" << stype << "<-" << endl;
       // -- DATA
       pF = loadFile(sfile);
 
       ds = new dataset();
       ds->fSize = 1.2;
       ds->fWidth = 2;
-      if (string::npos != stype.find("bmm,")) {
-        sname = "bmmData";
-        if (string::npos != stype.find("legacy")) sname += "Legacy";
-        sdecay = "dimuon";
-        ldecay = "dimuon";
+      if (string::npos != stype.find("pixel,")) {
+        sname = "pixelData";
         ds->fColor = kBlack;
         ds->fSymbol = 20;
         ds->fF      = pF;
@@ -252,6 +250,7 @@ void plotClass::loadFiles(string afiles) {
         ds->fMass   = 1.;
         ds->fFillStyle = 3365;
         ds->fLumi   = atof(slumi.c_str());
+        cout << "adding ds " << sname << endl;
       }
     }
   }
