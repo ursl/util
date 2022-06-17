@@ -30,7 +30,7 @@ LDFLAGS       = $(CXXFLAGS) $(ROOTLDFLAGS) -dynamiclib -shared
 SOFLAGS       = $(CXXFLAGS) $(ROOTLDFLAGS) -dynamiclib -shared
 
 GLIBS         = $(filter-out -lz, $(ROOTGLIBS))
-GLIBS         += -lMinuit -lRooFitCore -lRooFit
+GLIBS         += -lMinuit #-lRooFitCore -lRooFit
 
 # -- Source code
 UTIL = util.o \

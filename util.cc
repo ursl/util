@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <sstream>
 #include <unistd.h>
 
 #include "util.hh"
@@ -47,35 +48,6 @@ void setTitles(TH1 *h, const char *sx, const char *sy, float size,
     h->GetXaxis()->SetTitleFont(font); h->GetYaxis()->SetTitleFont(font);
     h->SetNdivisions(508, "X");
   }
-}
-
-// ----------------------------------------------------------------------
-void setTitles(RooPlot *h, const char *sx, const char *sy, float size,
-	       float xoff, float yoff, float lsize, int font) {
-  if (h == 0) {
-    cout << " Histogram not defined" << endl;
-  } else {
-    h->SetXTitle(sx);                  h->SetYTitle(sy);
-    h->SetTitleOffset(xoff, "x");      h->SetTitleOffset(yoff, "y");
-    h->SetTitleSize(size, "x");        h->SetTitleSize(size, "y");
-    h->SetLabelSize(lsize, "x");       h->SetLabelSize(lsize, "y");
-    h->SetLabelFont(font, "x");        h->SetLabelFont(font, "y");
-    h->GetXaxis()->SetTitleFont(font); h->GetYaxis()->SetTitleFont(font);
-    h->SetNdivisions(508, "X");
-  }
-}
-
-// ----------------------------------------------------------------------
-void removeEmptyBins(RooHist *h, double cutoff) {
-  if (h) {
-    for (int i = 0; i < h->GetN(); ++i) {
-      if (h->GetY()[i] < cutoff) {
-	h->SetPointError(i, 0., 0., 0., 0.);
-	h->GetY()[i] = cutoff;
-      }
-    }
-  }
-
 }
 
 // ----------------------------------------------------------------------

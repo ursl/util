@@ -14,9 +14,6 @@
 #include "TLegend.h"
 #include "TLorentzVector.h"
 
-#include "RooPlot.h"
-#include "RooHist.h"
-
 #include <vector>
 #include <cstdarg>
 
@@ -91,12 +88,6 @@ void setHistTitles(TH1 *h, dataset *ds, const char *sx, const char *sy,
 		   float size = 0.05, float xoff = 1.1, float yoff = 1.1, float lsize = 0.05, int font = 42);
 
 void showOverflow(TH1 *h);
-
-
-// -- RooFit
-void setTitles(RooPlot *h, const char *sx, const char *sy,
-	       float size = 0.05, float xoff = 1.1, float yoff = 1.1, float lsize = 0.05, int font = 42);
-void removeEmptyBins(RooHist *h, double cutoff = 1.e-6);
 
 
 // ======================================================================
