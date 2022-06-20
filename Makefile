@@ -5,10 +5,10 @@
 # ======================================================================
 .PHONY: prep clean vars
 
-ROOTCINT      = $(ROOTSYS)/bin/rootcling
-ROOTCFLAGS    = $(shell $(ROOTSYS)/bin/root-config --cflags)
-ROOTGLIBS     = $(shell $(ROOTSYS)/bin/root-config --glibs)
-ROOTLDFLAGS   = $(shell $(ROOTSYS)/bin/root-config --ldflags)
+ROOTCINT      = rootcling
+ROOTCFLAGS    = $(shell root-config --cflags)
+ROOTGLIBS     = $(shell root-config --glibs)
+ROOTLDFLAGS   = $(shell root-config --ldflags)
 
 ifdef SCRAM_ARCH
   # CXX         := $(shell scramv1 tool info gcc-cxxcompiler | grep CXX= | sed s/CXX=//)
