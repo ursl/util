@@ -1056,6 +1056,7 @@ void hplAll(const char *hpat, const char *options, int n) {
     TString hname(sig->GetName());
     //    hname += Form(";%d", version);
     //    cout << "hname = " << hname << endl;
+    if (0 == sig->GetEntries()) continue;
     if (!hname.Contains(hpat)) continue;
     if (gROOT->GetClass(key->GetClassName())->InheritsFrom("TH1D")) {
       h1.push_back((TH1D*)gDirectory->Get(hname));
