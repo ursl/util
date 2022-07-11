@@ -42,8 +42,8 @@ UTIL = util.o \
        dataset.o \
        selpoint.o \
        plotClass.o \
-       PidData.o PidTable.o
-
+       PidData.o PidTable.o \
+       PixelNoiseMaskFile.o
 
 DICT = ${UTIL:.o=Dict.o}
 DICTHEADERS = ${UTIL:.o=Dict.h}
