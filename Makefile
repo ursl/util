@@ -34,6 +34,7 @@ GLIBS         += -lMinuit #-lRooFitCore -lRooFit
 
 # -- Source code
 UTIL = util.o \
+       numpy.o \
        initFunc.o \
        json.o \
        AnalysisCuts.o \
