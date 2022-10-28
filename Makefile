@@ -77,6 +77,10 @@ all: prep lib bin
 lib: $(addprefix obj/,$(UTIL)  $(DICT))
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(DICT)) -o lib/libAnaUtil.so $(GLIBS) -lMinuit
 
+jpegAna: jpegAna.cc
+	$(CXX) -o jpegAna jpegAna.cc -L/opt/homebrew/lib/ -ljpeg
+
+
 
 # -- create directories if not yet existing
 prep:
@@ -87,3 +91,4 @@ clean:
 	rm -f $(DICTHEADERS)
 	rm -f lib/*.pcm
 	rm -f lib/libAnaUtil.so
+	rm -f jpegAna
