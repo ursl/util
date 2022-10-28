@@ -78,7 +78,7 @@ lib: $(addprefix obj/,$(UTIL)  $(DICT))
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(DICT)) -o lib/libAnaUtil.so $(GLIBS) -lMinuit
 
 jpegAna: jpegAna.cc
-	$(CXX) -o jpegAna jpegAna.cc -L/opt/homebrew/lib/ -ljpeg
+	$(CXX) $(CXXFLAGS) -o jpegAna jpegAna.cc -L/opt/homebrew/lib/ -ljpeg $(GLIBS)
 
 
 

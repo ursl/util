@@ -1,15 +1,21 @@
 #include <iostream>
 #include <jpeglib.h>
 
+#include "TFile.h"
+#include "TH1D.h"
+
 using namespace std;
 
 // ----------------------------------------------------------------------
 int loadJpg(const char* Name) {
-  unsigned char a, r, g, b;
+  unsigned char a, r, g, b, l;
   int width, height;
   struct jpeg_decompress_struct cinfo;
   struct jpeg_error_mgr jerr;
 
+  TFile *f1 = TFile::Open("test.root", "RECREATE");
+  TH1D *h1 = new TH1D("h1", "h1", 4000, 0., 4000.);
+  
   FILE * infile;        /* source file */
   JSAMPARRAY pJpegBuffer;       /* Output row buffer */
   int row_stride;       /* physical row width in output buffer */
@@ -34,6 +40,7 @@ int loadJpg(const char* Name) {
   row_stride = width * cinfo.output_components;
   pJpegBuffer = (*cinfo.mem->alloc_sarray)((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
+  int iline(0);
   while (cinfo.output_scanline < cinfo.output_height) {
     (void) jpeg_read_scanlines(&cinfo, pJpegBuffer, 1);
     for (int x = 0; x < width; x++) {
@@ -46,17 +53,27 @@ int loadJpg(const char* Name) {
         g = r;
         b = r;
       }
+      l = (0.2126*r + 0.7152*g + 0.0722*b);
+      if (iline == 2000) {
+        h1->Fill(x, l);
+      }
+      
       *(pDummy++) = b;
       *(pDummy++) = g;
       *(pDummy++) = r;
       *(pDummy++) = a;
     }
+    ++iline;
   }
   fclose(infile);
   (void) jpeg_finish_decompress(&cinfo);
   jpeg_destroy_decompress(&cinfo);
   cout << " width =  " << width << endl;
   cout << " height = " << height << endl;
+
+  h1->Write();
+  f1->Close();
+
   return 0;
 }
 
