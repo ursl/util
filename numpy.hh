@@ -26,7 +26,8 @@ public:
   numpy(int verbose = 1);
   ~numpy();
 
-
+  std::vector<double> linspace(int nbins, double xlo, double xhi);
+  
 private:
 
   int fVerbose; 

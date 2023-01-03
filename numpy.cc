@@ -27,3 +27,13 @@ numpy::numpy(int verbose): fVerbose(verbose) {
 // ----------------------------------------------------------------------
 numpy::~numpy() {
 }
+
+// ----------------------------------------------------------------------
+vector<double> numpy::linspace(int nbins, double xlo, double xhi) {
+  vector<double> result; 
+  result.resize(nbins);
+  for (unsigned int ibin = 0; ibin < nbins; ++ibin) {
+    result[ibin] = xlo + ibin*(xhi-xlo)/nbins;
+  }
+  return result;
+}
