@@ -141,6 +141,7 @@ double getErrorRange(TH1*, int = -1, int = -1);
 // Utilities for analysis
 // ======================================================================
 void mk4Vector(TLorentzVector &p4, const Double_t p, const Double_t t, const Double_t f, const Double_t m);
+TLorentzVector mk4Vector(const Double_t p, const Double_t t, const Double_t f, const Double_t m);
 
 bool isLepton(int id);
 bool isQuark(int id);

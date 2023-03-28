@@ -76,6 +76,7 @@
 #pragma link C++ function getErrorRange(TH1*, int, int);
 
 #pragma link C++ function mk4Vector(TLorentzVector &, const Double_t, const Double_t, const Double_t, const Double_t);
+#pragma link C++ function mk4Vector(const Double_t, const Double_t, const Double_t, const Double_t);
 
 #pragma link C++ function hpl(TH1*, const char *);
 #pragma link C++ function hpl(const char *, const char *);
