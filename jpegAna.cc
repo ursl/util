@@ -15,7 +15,6 @@ int loadJpg(const char* Name) {
   struct jpeg_error_mgr jerr;
 
   TFile *f1 = TFile::Open("test.root", "RECREATE");
-  TH1D *h1 = new TH1D("h1", "h1", 4000, 0., 4000.);
   
   FILE * infile;        /* source file */
   JSAMPARRAY pJpegBuffer;       /* Output row buffer */
@@ -31,7 +30,9 @@ int loadJpg(const char* Name) {
   (void) jpeg_start_decompress(&cinfo);
   width = cinfo.output_width;
   height = cinfo.output_height;
-  TH2D *h2 = new TH2D("h2", "h2", height, 0., height, width, 0., width);
+  TH1D *hx = new TH1D("hx", "hx", height, 0., height);
+  TH1D *hy = new TH1D("hy", "hy", width, 0., width);
+  TH2D *h2  = new TH2D("h2", "h2", height, 0., height, width, 0., width);
 
   unsigned char * pDummy = new unsigned char[width*height*4];
   unsigned char * pTest = pDummy;
@@ -56,10 +57,15 @@ int loadJpg(const char* Name) {
         b = r;
       }
       l = (0.2126*r + 0.7152*g + 0.0722*b);
-      if (iline == 2000) {
-        h1->Fill(x, l);
-      }
       h2->Fill(y, x, l);
+      if (iline == width/2) {
+        hy->Fill(x, l);
+        h2->Fill(y, x, 500.);
+      }
+      if (x == height/2) {
+        hx->Fill(y, l);
+        h2->Fill(y, x, 200.);
+      }
       
       *(pDummy++) = b;
       *(pDummy++) = g;
@@ -75,7 +81,8 @@ int loadJpg(const char* Name) {
   cout << " width =  " << width << endl;
   cout << " height = " << height << endl;
 
-  h1->Write();
+  hx->Write();
+  hy->Write();
   h2->Write();
   f1->Close();
 
