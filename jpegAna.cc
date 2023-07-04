@@ -1,11 +1,23 @@
 #include <iostream>
 #include <jpeglib.h>
 
+#include "TCanvas.h"
 #include "TFile.h"
 #include "TH1D.h"
 #include "TH2D.h"
 
 using namespace std;
+
+// ----------------------------------------------------------------------
+void replaceAll(string &str, const string &from, const string &to) {
+  if (from.empty()) return;
+  size_t start_pos = 0;
+  while((start_pos = str.find(from, start_pos)) != string::npos) {
+    str.replace(start_pos, from.length(), to);
+    start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+  }
+}
+
 
 // ----------------------------------------------------------------------
 int loadJpg(const char* Name) {
@@ -32,7 +44,7 @@ int loadJpg(const char* Name) {
   height = cinfo.output_height;
   TH1D *hx = new TH1D("hx", "hx", height, 0., height);
   TH1D *hy = new TH1D("hy", "hy", width, 0., width);
-  TH2D *h2  = new TH2D("h2", "h2", height, 0., height, width, 0., width);
+  TH2D *h2  = new TH2D("h2", "h2", width, 0., width, height, 0., height);
 
   unsigned char * pDummy = new unsigned char[width*height*4];
   unsigned char * pTest = pDummy;
@@ -57,14 +69,14 @@ int loadJpg(const char* Name) {
         b = r;
       }
       l = (0.2126*r + 0.7152*g + 0.0722*b);
-      h2->Fill(y, x, l);
+      h2->Fill(x, height-y, l);
       if (iline == width/2) {
         hy->Fill(x, l);
-        h2->Fill(y, x, 500.);
+        h2->Fill(x, height-y, 500.);
       }
       if (x == height/2) {
         hx->Fill(y, l);
-        h2->Fill(y, x, 200.);
+        h2->Fill(x, height-y, 200.);
       }
       
       *(pDummy++) = b;
@@ -80,12 +92,31 @@ int loadJpg(const char* Name) {
   jpeg_destroy_decompress(&cinfo);
   cout << " width =  " << width << endl;
   cout << " height = " << height << endl;
+  
+  TCanvas *c0 = new TCanvas("c0", "--c0--", 0, 0, 1000., 650.);
+  string cname(Name);
+  replaceAll(cname, ".JPG", "-h2.png");
+  
+  h2->Draw("colz");
+  c0->SaveAs(cname.c_str());
+
+  c0->Clear();
+  hx->Draw();
+  replaceAll(cname, "-h2.png", "-hx.png");
+  c0->SaveAs(cname.c_str());
+
+  c0->Clear();
+  hy->Draw();
+  replaceAll(cname, "-hx.png", "-hy.png");
+  c0->SaveAs(cname.c_str());
 
   hx->Write();
   hy->Write();
   h2->Write();
   f1->Close();
 
+
+  
   return 0;
 }
 
