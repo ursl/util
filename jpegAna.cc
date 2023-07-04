@@ -3,6 +3,7 @@
 
 #include "TFile.h"
 #include "TH1D.h"
+#include "TH2D.h"
 
 using namespace std;
 
@@ -30,8 +31,9 @@ int loadJpg(const char* Name) {
   (void) jpeg_start_decompress(&cinfo);
   width = cinfo.output_width;
   height = cinfo.output_height;
+  TH2D *h2 = new TH2D("h2", "h2", height, 0., height, width, 0., width);
 
-  unsigned char * pDummy = new unsigned char [width*height*4];
+  unsigned char * pDummy = new unsigned char[width*height*4];
   unsigned char * pTest = pDummy;
   if (!pDummy) {
     printf("NO MEM FOR JPEG CONVERT!\n");
@@ -40,7 +42,7 @@ int loadJpg(const char* Name) {
   row_stride = width * cinfo.output_components;
   pJpegBuffer = (*cinfo.mem->alloc_sarray)((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
-  int iline(0);
+  int iline(0), y(0);
   while (cinfo.output_scanline < cinfo.output_height) {
     (void) jpeg_read_scanlines(&cinfo, pJpegBuffer, 1);
     for (int x = 0; x < width; x++) {
@@ -57,6 +59,7 @@ int loadJpg(const char* Name) {
       if (iline == 2000) {
         h1->Fill(x, l);
       }
+      h2->Fill(y, x, l);
       
       *(pDummy++) = b;
       *(pDummy++) = g;
@@ -64,6 +67,7 @@ int loadJpg(const char* Name) {
       *(pDummy++) = a;
     }
     ++iline;
+    ++y;
   }
   fclose(infile);
   (void) jpeg_finish_decompress(&cinfo);
@@ -72,15 +76,21 @@ int loadJpg(const char* Name) {
   cout << " height = " << height << endl;
 
   h1->Write();
+  h2->Write();
   f1->Close();
 
   return 0;
 }
 
-int main() {
-
-  cout << "hallo" << endl;
-  loadJpg("/Users/ursl/glass-20220401-5.jpg");
+// ----------------------------------------------------------------------
+int main(int argc, char* argv[]) {
+  // -- command line arguments
+  string file("fixme");
+  for (int i = 0; i < argc; i++){
+    if (!strcmp(argv[i], "-f"))   {file = argv[++i];}
+  }
+  cout << "jpegAna load file ->" << file << "<-" << endl;
+  loadJpg(file.c_str());
           
   return 0; 
 }
