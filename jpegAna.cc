@@ -2,6 +2,7 @@
 #include <jpeglib.h>
 
 #include "TCanvas.h"
+#include "TStyle.h"
 #include "TFile.h"
 #include "TH1D.h"
 #include "TH2D.h"
@@ -42,9 +43,11 @@ int loadJpg(const char* Name) {
   (void) jpeg_start_decompress(&cinfo);
   width = cinfo.output_width;
   height = cinfo.output_height;
-  TH1D *hx = new TH1D("hx", "hx", height, 0., height);
-  TH1D *hy = new TH1D("hy", "hy", width, 0., width);
-  TH2D *h2  = new TH2D("h2", "h2", width, 0., width, height, 0., height);
+  double xmin(1000.), xmax(3000.), ymin(500.), ymax(2400.);
+  TH1D *hx = new TH1D("hx", "hx", static_cast<int>(ymax-ymin), ymin, ymax);
+  TH1D *hy = new TH1D("hy", "hy", static_cast<int>(xmax-xmin), xmin, xmax);
+  TH2D *h2  = new TH2D("h2", "h2", static_cast<int>(xmax-xmin), xmin, xmax,
+                       static_cast<int>(ymax-ymin), ymin, ymax);
 
   unsigned char * pDummy = new unsigned char[width*height*4];
   unsigned char * pTest = pDummy;
@@ -56,6 +59,7 @@ int loadJpg(const char* Name) {
   pJpegBuffer = (*cinfo.mem->alloc_sarray)((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
   int iline(0), y(0);
+  double cutoff(80.);
   while (cinfo.output_scanline < cinfo.output_height) {
     (void) jpeg_read_scanlines(&cinfo, pJpegBuffer, 1);
     for (int x = 0; x < width; x++) {
@@ -68,15 +72,23 @@ int loadJpg(const char* Name) {
         g = r;
         b = r;
       }
+      //00    l = (0.2126*r + 0.7152*g + 0.0722*b);
+      //01    l = r + g + b;
+      //02    l = (0.299*r + 0.587*g + 0.114*b);
       l = (0.2126*r + 0.7152*g + 0.0722*b);
-      h2->Fill(x, height-y, l);
-      if (iline == width/2) {
-        hy->Fill(x, l);
-        h2->Fill(x, height-y, 500.);
+      if (l > cutoff) {
+        l = 0.;
+      } 
+      if (l < 50) {
+        l = 0.;
+      }  
+      if (x == width/2) {
+        hx->Fill(height-y, l);
+      } else {
+        h2->Fill(x, height-y, l);
       }
-      if (x == height/2) {
-        hx->Fill(y, l);
-        h2->Fill(x, height-y, 200.);
+      if (y == height/2) {
+        hy->Fill(x, l);
       }
       
       *(pDummy++) = b;
@@ -96,7 +108,8 @@ int loadJpg(const char* Name) {
   TCanvas *c0 = new TCanvas("c0", "--c0--", 0, 0, 1000., 650.);
   string cname(Name);
   replaceAll(cname, ".JPG", "-h2.png");
-  
+
+  gStyle->SetOptStat(0);
   h2->Draw("colz");
   c0->SaveAs(cname.c_str());
 
