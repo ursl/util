@@ -56,8 +56,6 @@ int main(int argc, char* argv[]) {
 
     // Transform source image to gray if it is not already
     Mat gray;
-
-
     if (img.channels() == 3)  {
       cvtColor(img, gray, COLOR_BGR2GRAY);
     } else {
@@ -74,7 +72,8 @@ int main(int argc, char* argv[]) {
     }
     
     Mat bw;
-    adaptiveThreshold(~gray, bw, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 15, -2);
+    adaptiveThreshold(~gray, bw, 255, /*ADAPTIVE_THRESH_GAUSSIAN_C*/ ADAPTIVE_THRESH_MEAN_C,
+                      THRESH_BINARY, 15, -2);
     // Show binary image
     imshow("binary", bw);
     k = waitKey(0); // Wait for a keystroke in the window
@@ -83,8 +82,6 @@ int main(int argc, char* argv[]) {
     } else if (k == 'q') {
       return(0); 
     }
-
-
 
     // Create the images that will use to extract the horizontal and vertical lines
     Mat horizontal = bw.clone();
@@ -97,10 +94,27 @@ int main(int argc, char* argv[]) {
     erode(horizontal, horizontal, horizontalStructure, Point(-1, -1));
     dilate(horizontal, horizontal, horizontalStructure, Point(-1, -1));
 
-    imshow("erode", horizontal);
+    imshow("horizontal", horizontal);
     k = waitKey(0); // Wait for a keystroke in the window
     if(k == 's') {
       imwrite("horizontal.png", horizontal);
+    } else if (k == 'q') {
+      return(0); 
+    }
+
+    
+    // Specify size on vertical axis
+    int vertical_size = vertical.rows / 30;
+    // Create structure element for extracting vertical lines through morphology operations
+    Mat verticalStructure = getStructuringElement(MORPH_RECT, Size(1, vertical_size));
+    // Apply morphology operations
+    erode(vertical, vertical, verticalStructure, Point(-1, -1));
+    dilate(vertical, vertical, verticalStructure, Point(-1, -1));
+    // Show extracted vertical lines
+    imshow("vertical", vertical);
+    k = waitKey(0); // Wait for a keystroke in the window
+    if(k == 's') {
+      imwrite("vertical.png", vertical);
     } else if (k == 'q') {
       return(0); 
     }
