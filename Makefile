@@ -36,6 +36,9 @@ SOFLAGS       = $(CXXFLAGS) $(ROOTLDFLAGS) -dynamiclib -shared
 GLIBS         = $(filter-out -lz, $(ROOTGLIBS))
 GLIBS         += -lMinuit #-lRooFitCore -lRooFit
 
+INCOPENCV     := -I/opt/homebrew/Cellar/opencv/4.8.0/include/opencv4
+LIBOPENCV     := -L/opt/homebrew/Cellar/opencv/4.8.0/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_imgproc
+
 # -- Source code
 UTIL = util.o \
        numpy.o \
@@ -82,8 +85,10 @@ lib: $(addprefix obj/,$(UTIL)  $(DICT))
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(DICT)) -o lib/libAnaUtil.so $(GLIBS) -lMinuit
 
 jpegAna: jpegAna.cc
-	$(CXX) $(CXXFLAGS) -o jpegAna jpegAna.cc -L/opt/homebrew/lib/ -ljpeg $(GLIBS)
+	$(CXX) $(CXXFLAGS) -o jpegAna jpegAna.cc -I -L/opt/homebrew/lib/ -l $(GLIBS)
 
+opencvAna: opencvAna.cc
+	$(CXX) $(CXXFLAGS) -o opencvAna opencvAna.cc $(INCOPENCV) $(LIBOPENCV)
 
 
 # -- create directories if not yet existing
