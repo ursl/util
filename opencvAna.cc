@@ -72,8 +72,12 @@ int main(int argc, char* argv[]) {
     }
     
     Mat bw;
-    adaptiveThreshold(~gray, bw, 255, /*ADAPTIVE_THRESH_GAUSSIAN_C*/ ADAPTIVE_THRESH_MEAN_C,
-                      THRESH_BINARY, 15, -2);
+    //    adaptiveThreshold(~gray, bw, 255, /*ADAPTIVE_THRESH_GAUSSIAN_C*/ ADAPTIVE_THRESH_MEAN_C,
+    //                      THRESH_BINARY, 15, -2);
+
+
+    adaptiveThreshold(~gray, bw, 255, ADAPTIVE_THRESH_GAUSSIAN_C /*ADAPTIVE_THRESH_MEAN_C*/,
+                      THRESH_BINARY_INV, 11, 2);
     // Show binary image
     imshow("binary", bw);
     k = waitKey(0); // Wait for a keystroke in the window
@@ -87,7 +91,7 @@ int main(int argc, char* argv[]) {
     Mat horizontal = bw.clone();
     Mat vertical = bw.clone();
     // Specify size on horizontal axis
-    int horizontal_size = horizontal.cols / 40;
+    int horizontal_size = horizontal.cols / 50;
     // Create structure element for extracting horizontal lines through morphology operations
     Mat horizontalStructure = getStructuringElement(MORPH_RECT, Size(horizontal_size, 1));
     // Apply morphology operations
