@@ -26,8 +26,11 @@ else
   endif
 endif
 
+INCOPENCV     := -I/opt/homebrew/Cellar/opencv/4.8.0/include/opencv4
+
 CXXFLAGS      = -g -O0 -Wall -fPIC -pipe
 CXXFLAGS     += $(ROOTCFLAGS)
+CXXFLAGS     += $(INCOPENCV)
 
 LD            = $(CXX)
 LDFLAGS       = $(CXXFLAGS) $(ROOTLDFLAGS) -dynamiclib -shared
@@ -36,7 +39,6 @@ SOFLAGS       = $(CXXFLAGS) $(ROOTLDFLAGS) -dynamiclib -shared
 GLIBS         = $(filter-out -lz, $(ROOTGLIBS))
 GLIBS         += -lMinuit #-lRooFitCore -lRooFit
 
-INCOPENCV     := -I/opt/homebrew/Cellar/opencv/4.8.0/include/opencv4
 LIBOPENCV     := -L/opt/homebrew/Cellar/opencv/4.8.0/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_imgproc
 
 # -- Source code
@@ -56,6 +58,10 @@ UTIL = util.o \
 DICT = ${UTIL:.o=Dict.o}
 DICTHEADERS = ${UTIL:.o=Dict.h}
 DICTSOURCES = ${UTIL:.o=Dict.cc}
+
+
+# -- Open CV
+OPENCV = opencvTests.o
 
 # -- Default rules
 $(addprefix obj/,%.o) : %.cc %.hh
@@ -81,14 +87,18 @@ $(addprefix lib/,%.pcm) :
 all: prep lib bin
 
 
-lib: $(addprefix obj/,$(UTIL)  $(DICT))
+lib: $(addprefix obj/,$(UTIL)  $(DICT))  
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(DICT)) -o lib/libAnaUtil.so $(GLIBS) -lMinuit
+
+olib: $(addprefix obj/,$(OPENCV))
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(OPENCV)) -o lib/libOpenCV.so $(GLIBS) -lMinuit $(LIBOPENCV)
 
 jpegAna: jpegAna.cc
 	$(CXX) $(CXXFLAGS) -o jpegAna jpegAna.cc -I -L/opt/homebrew/lib/ -l $(GLIBS)
 
-opencvAna: opencvAna.cc
-	$(CXX) $(CXXFLAGS) -o opencvAna opencvAna.cc $(INCOPENCV) $(LIBOPENCV)
+opencv: opencvRun.cc olib
+	$(CXX) $(CXXFLAGS) -c -o obj/opencvRun.o opencvRun.cc 
+	$(CXX) $(CXXFLAGS) -o bin/opencvRun opencvRun.cc lib/libOpenCV.so $(LIBOPENCV) 
 
 
 # -- create directories if not yet existing
