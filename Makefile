@@ -85,6 +85,15 @@ lib: $(addprefix obj/,$(UTIL)  $(DICT))
 jpegAna: jpegAna.cc
 	$(CXX) $(CXXFLAGS) -o jpegAna jpegAna.cc -I -L/opt/homebrew/lib/ -l $(GLIBS)
 
+serializeRootFile: serializeRootFile.cc
+	$(CXX) $(CXXFLAGS) -o serializeRootFile serializeRootFile.cc $(GLIBS)
+
+testMu3eCDB: testMu3eCDB.cc
+	$(CXX) $(CXXFLAGS) -o testMu3eCDB testMu3eCDB.cc -I /Users/ursl/mu3e/software/mu3e-cdb/install/include/ \
+  -I /Users/ursl/fsx/geant4/geant4-11.1.3/include/Geant4/ \
+  -I /opt/homebrew/include/eigen3/ \
+  -L/Users/ursl/mu3e/software/mu3e-cdb/install/lib -l mu3e_conddb -l mu3e_rec -l mu3e_util $(GLIBS)
+
 
 # -- create directories if not yet existing
 prep:
