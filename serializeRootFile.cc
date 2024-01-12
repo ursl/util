@@ -63,14 +63,14 @@ string serialize() {
            << endl;
 
       int nbr = h1->GetListOfBranches()->GetEntries();
+      h1->SetScanField(0);
       for (int i = 0; i != nbr; ++i) {
         const char* name = h1->GetListOfBranches()->At(i)->GetName();
-        cout << name <<endl;
-        
+        cout << name << " start scan" << endl;
+        //        h1->Scan(name, "", "precision=8");
+        h1->Scan(name);
+        cout << name << " end scan" << endl;
       }
-      h1->SetScanFileName("bla.txt");
-      h1->SetScanField(0);
-      h1->Scan();
     }
     prevName = key->GetName();
   }
