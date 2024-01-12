@@ -59,17 +59,17 @@ string serialize() {
       cout << h1[0][0] << endl;
     } else if (gROOT->GetClass(key->GetClassName())->InheritsFrom("TTree")) {
       TTree *h1 = (TTree*)key->ReadObj();
-      cout << "TTree " << h1->GetName() << " nentries = " << h1->GetEntries()
-           << endl;
-
-      int nbr = h1->GetListOfBranches()->GetEntries();
-      h1->SetScanField(0);
-      for (int i = 0; i != nbr; ++i) {
-        const char* name = h1->GetListOfBranches()->At(i)->GetName();
-        cout << name << " start scan" << endl;
-        //        h1->Scan(name, "", "precision=8");
-        h1->Scan(name);
-        cout << name << " end scan" << endl;
+      cout << "TTree " << h1->GetName() << " nentries = " << h1->GetEntries()  << endl;
+      if (h1->GetEntries() > 0) {
+        int nbr = h1->GetListOfBranches()->GetEntries();
+        h1->SetScanField(0);
+        for (int i = 0; i != nbr; ++i) {
+          const char* name = h1->GetListOfBranches()->At(i)->GetName();
+          cout << name << " start scan in tree " << h1->GetName() << endl;
+          //        h1->Scan(name, "", "precision=8");
+          h1->Scan(name);
+          cout << name << " end scan" << endl;
+        }
       }
     }
     prevName = key->GetName();
