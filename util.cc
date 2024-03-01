@@ -496,7 +496,7 @@ void mk4Vector(TLorentzVector &p4, const Double_t p, const Double_t t, const Dou
 
 // ----------------------------------------------------------------------
 TLorentzVector mk4Vector(const Double_t p, const Double_t t, const Double_t f, const Double_t m) {
-  TLorentzVector p4; 
+  TLorentzVector p4;
   p4.SetXYZM(p*TMath::Sin(t)*TMath::Cos(f), p*TMath::Sin(t)*TMath::Sin(f), p*TMath::Cos(t), m);
   return p4;
 }
@@ -629,6 +629,19 @@ double poissonError(int n, double &up, double &down) {
   return -1.;
 }
 
+
+// ----------------------------------------------------------------------
+double poissonErrorExact(int n, double &up, double &down) {
+  double alpha = 0.158655;
+  double vlo = 0.5*TMath::ChisquareQuantile(alpha, 2.*n);
+  double vup = 0.5*TMath::ChisquareQuantile(1-alpha, 2.*(n+1));
+
+  up   = vup - n;
+  down = n - vlo;
+
+  return (0.5*(up+down));
+
+}
 
 
 // ----------------------------------------------------------------------

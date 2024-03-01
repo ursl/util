@@ -57,6 +57,7 @@
 #pragma link C++ function chi2Test(TH1*, TH1*, double&, double&, int);
 #pragma link C++ function chi2TestErr(TH1*, TH1*, double&, double&, int);
 #pragma link C++ function poissonError(int , double &, double &);
+#pragma link C++ function poissonErrorExact(int , double &, double &);
 
 #pragma link C++ function dEff(int, int);
 #pragma link C++ function dEff(int, double);
