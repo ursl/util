@@ -20,7 +20,7 @@ else
   else
     ifdef CXX
     CXX         := $(CXX)
-    else 
+    else
       CXX         := c++
     endif
   endif
@@ -79,11 +79,13 @@ $(addprefix lib/,%.pcm) :
 all: prep lib bin
 
 
-lib: $(addprefix obj/,$(UTIL)  $(DICT))  
+lib: $(addprefix obj/,$(UTIL)  $(DICT))
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(DICT)) -o lib/libAnaUtil.so $(GLIBS) -lMinuit
 
+bin: jpegAna serializeRootFile
+
 jpegAna: jpegAna.cc
-	$(CXX) $(CXXFLAGS) -o jpegAna jpegAna.cc -I -L/opt/homebrew/lib/ -l $(GLIBS)
+	$(CXX) $(CXXFLAGS) -o jpegAna jpegAna.cc  $(GLIBS) /opt/homebrew/lib/libjpeg.dylib
 
 serializeRootFile: serializeRootFile.cc
 	$(CXX) $(CXXFLAGS) -o serializeRootFile serializeRootFile.cc $(GLIBS)
@@ -102,6 +104,7 @@ prep:
 clean:
 	rm -f $(addprefix obj/,$(UTIL) $(DICT))
 	rm -f $(DICTHEADERS)
+	rm -rf bin/*
 	rm -f lib/*.pcm
 	rm -f lib/libAnaUtil.so
 	rm -f jpegAna
