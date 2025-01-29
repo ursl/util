@@ -79,7 +79,7 @@ std::vector<int> defVector(int n, ...);
 void setTitles(TH1 *h, const char *sx, const char *sy,
 	       float size = 0.05, float xoff = 1.1, float yoff = 1.1, float lsize = 0.05, int font = 42);
 void setHist(TH1 *h, int color = kBlack, int symbol = 20, double size = 1., double width = 2.);
-void setGraph(TGraph *g, int color = kBlack, int symbol = 20, double size = 1., double width = 2.);
+void setGraph(TGraph *g, int color = kBlack, int symbol = 20, double size = 1., double width = 2., Int_t lstyle = kSolid);
 void setFilledHist(TH1 *h, int lcol = kBlack, int fcol = kYellow, int fstyle = 1000, int width = 1);
 void setMaximum(double scale = 1.2, TH1 *h1 = 0, TH1 *h2 = 0);
 

@@ -74,8 +74,8 @@ void setHistTitles(TH1 *h, dataset *ds, const char *sx, const char *sy,
 }
 
 // ----------------------------------------------------------------------
-void setGraph(TGraph *h, Int_t color, Int_t symbol, Double_t size, Double_t width) {
-  h->SetLineColor(color);   h->SetLineWidth(width);
+void setGraph(TGraph *h, Int_t color, Int_t symbol, Double_t size, Double_t width, Int_t lstyle) {
+  h->SetLineColor(color);   h->SetLineWidth(width);  h->SetLineStyle(lstyle);
   h->SetMarkerColor(color); h->SetMarkerStyle(symbol);  h->SetMarkerSize(size);
 }
 
