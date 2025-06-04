@@ -84,6 +84,14 @@ lib: $(addprefix obj/,$(UTIL)  $(DICT))
 
 bin: jpegAna serializeRootFile
 
+LBINARIES = jpegAna serializeRootFile
+ifneq (,$(findstring merlin,$(LHOST)))
+  $(info ************  MERLIN VERSION ************)
+  BINARIES = $(filter-out jpegAna, $(LBINARIES))
+endif
+
+bin: $(BINARIES)
+
 jpegAna: jpegAna.cc
 	$(CXX) $(CXXFLAGS) -o jpegAna jpegAna.cc  $(GLIBS) /opt/homebrew/lib/libjpeg.dylib
 
