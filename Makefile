@@ -86,7 +86,7 @@ bin: jpegAna serializeRootFile
 
 LBINARIES = jpegAna serializeRootFile
 # Define hostnames where jpegAna should NOT be built
-EXCLUDE_JPEG_HOSTS = merlin7 merlin6 mu3ebe
+EXCLUDE_JPEG_HOSTS = merlin7 merlin6 mu3ebe login001.merlin7.psi.ch
 
 ifeq ($(filter-out $(EXCLUDE_JPEG_HOSTS),$(LHOST)),)
   $(info ************  non-MOOR HOST ************)
