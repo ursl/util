@@ -85,10 +85,19 @@ lib: $(addprefix obj/,$(UTIL)  $(DICT))
 bin: jpegAna serializeRootFile
 
 LBINARIES = jpegAna serializeRootFile
-# Define hostnames where jpegAna should NOT be built
-EXCLUDE_JPEG_HOSTS = merlin7 merlin6 mu3ebe login001.merlin7.psi.ch
 
-ifeq ($(filter-out $(EXCLUDE_JPEG_HOSTS),$(LHOST)),)
+# -- Define hostnames where jpegAna should NOT be built
+EXCLUDE_JPEG_HOSTS = merlin7 merlin6 mu3ebe 
+
+# -- Check if any pattern in EXCLUDE_JPEG_HOSTS is contained in LHOST
+JPEG_EXCLUDED :=
+$(foreach pattern,$(EXCLUDE_JPEG_HOSTS),\
+  $(if $(findstring $(pattern),$(LHOST)),\
+    $(eval JPEG_EXCLUDED := 1),\
+  )\
+)
+
+ifneq (,$(JPEG_EXCLUDED))
   $(info ************  non-MOOR HOST ************)
   BINARIES = $(filter-out jpegAna, $(LBINARIES))
 endif
