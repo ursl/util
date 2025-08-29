@@ -100,6 +100,7 @@ $(foreach pattern,$(EXCLUDE_JPEG_HOSTS),\
 ifneq (,$(JPEG_EXCLUDED))
   $(info ************  non-MOOR HOST ************)
   BINARIES = $(filter-out jpegAna, $(LBINARIES))
+  $(info ************  BINARIES: $(BINARIES) ************)  
 endif
 
 bin: $(BINARIES)
