@@ -119,6 +119,8 @@ testMu3eCDB: testMu3eCDB.cc
   -L/Users/ursl/mu3e/software/mu3e-cdb/install/lib -l mu3e_conddb -l mu3e_rec -l mu3e_util $(GLIBS)
 
 
+all:
+
 # -- create directories if not yet existing
 prep:
 	mkdir -p obj bin lib
