@@ -73,7 +73,7 @@ $(addprefix obj/,%.o) : %.cc
 $(addprefix lib/,%.pcm) :
 	cd lib && ln -s $< && cd -
 
-
+LHOST := $(shell hostname)
 
 # -- Targets
 all: prep lib bin
@@ -85,18 +85,22 @@ lib: $(addprefix obj/,$(UTIL)  $(DICT))
 bin: jpegAna serializeRootFile
 
 LBINARIES = jpegAna serializeRootFile
-ifneq (,$(findstring merlin,$(LHOST)))
-  $(info ************  MERLIN VERSION ************)
+# Define hostnames where jpegAna should NOT be built
+EXCLUDE_JPEG_HOSTS = merlin7 merlin6 mu3ebe
+
+ifeq ($(filter-out $(EXCLUDE_JPEG_HOSTS),$(LHOST)),)
+  $(info ************  non-MOOR HOST ************)
   BINARIES = $(filter-out jpegAna, $(LBINARIES))
 endif
 
 bin: $(BINARIES)
 
+
 jpegAna: jpegAna.cc
-	$(CXX) $(CXXFLAGS) -o jpegAna jpegAna.cc  $(GLIBS) /opt/homebrew/lib/libjpeg.dylib
+	$(CXX) $(CXXFLAGS) -o bin/jpegAna jpegAna.cc  $(GLIBS) /opt/homebrew/lib/libjpeg.dylib
 
 serializeRootFile: serializeRootFile.cc
-	$(CXX) $(CXXFLAGS) -o serializeRootFile serializeRootFile.cc $(GLIBS)
+	$(CXX) $(CXXFLAGS) -o bin/serializeRootFile serializeRootFile.cc $(GLIBS)
 
 testMu3eCDB: testMu3eCDB.cc
 	$(CXX) $(CXXFLAGS) -o testMu3eCDB testMu3eCDB.cc -I /Users/ursl/mu3e/software/mu3e-cdb/install/include/ \
