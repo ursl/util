@@ -19,7 +19,8 @@ public:
   void plotVertexL1L2(std::map<std::string, TH1*> &hists, std::string pattern);
 
   // -- predefined setups
-  void setOptionsForHitmaps();
+  void setOptionsForHitmaps(bool rebin = false);
+  void setOptionsForTotDistributions(bool rebin = false);
 
   std::string fPDFName{"out/plot.pdf"};
 
@@ -56,6 +57,7 @@ private:
   std::vector<int> fLayer2;
   std::vector<int> fAllChips;
 
+  int fCanvasCounter{0};
 };
 
 #endif
