@@ -16,6 +16,13 @@ public:
   mu3ePlotUtils();
   ~mu3ePlotUtils();
 
+  int vtxChipIndex(int globalChipID);
+  int vtxLinkIndex(int globalChipID, int link);
+
+  int  nAllChips() { return fAllChips.size(); }
+  void resetNextGlobalChipID() { fNextGlobalChipID = 0; }
+  int  getNextGlobalChipID() { return fAllChips[fNextGlobalChipID++]; }
+
   void plotVertexL1L2(std::map<std::string, TH1*> &hists, std::string pattern);
 
   // -- predefined setups
@@ -56,6 +63,7 @@ private:
   std::vector<int> fLayer1;
   std::vector<int> fLayer2;
   std::vector<int> fAllChips;
+  int fNextGlobalChipID{0};
 
   int fCanvasCounter{0};
 };

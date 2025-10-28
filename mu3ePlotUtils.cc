@@ -39,6 +39,22 @@ mu3ePlotUtils::~mu3ePlotUtils() {
 }
 
 // ---------------------------------------------------------------------
+int mu3ePlotUtils::vtxChipIndex(int globalChipID) {
+  if (find(fAllChips.begin(), fAllChips.end(), globalChipID) != fAllChips.end()) {
+    return distance(fAllChips.begin(), find(fAllChips.begin(), fAllChips.end(), globalChipID));
+  }
+  return -1;
+}
+
+// ---------------------------------------------------------------------
+int mu3ePlotUtils::vtxLinkIndex(int globalChipID, int link) {
+  int chipIndex = vtxChipIndex(globalChipID);
+  if (chipIndex == -1) return -1;
+  if (link < 0 || link > 2) return -1;
+  return chipIndex * 3 + link;
+}
+
+// ---------------------------------------------------------------------
 void mu3ePlotUtils::setOptionsForHitmaps(bool rebin) {
   fOpt = "colz";
   fSetLogx = false; 
