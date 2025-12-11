@@ -88,7 +88,7 @@ bin: jpegAna serializeRootFile
 LBINARIES = jpegAna serializeRootFile
 
 # -- Define hostnames where jpegAna should NOT be built
-EXCLUDE_JPEG_HOSTS = merlin7 merlin6 mu3ebe 
+EXCLUDE_JPEG_HOSTS = merlin7 merlin6 mu3ebe login001 login002
 
 # -- Check if any pattern in EXCLUDE_JPEG_HOSTS is contained in LHOST
 JPEG_EXCLUDED :=
