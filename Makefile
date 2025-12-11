@@ -83,8 +83,6 @@ all: prep lib bin
 lib: $(addprefix obj/,$(UTIL)  $(DICT))
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(DICT)) -o lib/libAnaUtil.so $(GLIBS) -lMinuit
 
-bin: jpegAna serializeRootFile
-
 LBINARIES = jpegAna serializeRootFile
 
 # -- Define hostnames where jpegAna should NOT be built
