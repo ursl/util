@@ -23,6 +23,10 @@ using namespace std;
 // ----------------------------------------------------------------------
 plotClass::plotClass(string dir, string files, string cuts, string setup) {
 
+  cout << "plotClass::plotClass() dir = " << dir << " files = " << files 
+       << " cuts = " << cuts << " setup = " << setup 
+       << endl;
+       
   gStyle->SetHatchesSpacing(2);
 
   fDirectory = dir;
