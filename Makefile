@@ -3,10 +3,16 @@
 # -----
 #
 # ======================================================================
-.PHONY: prep clean vars
+.PHONY: prep clean vars all
+
+.DEFAULT_GOAL := all
+
+all: prep lib bin
 
 ROOTCINT      = rootcling
 ROOTCFLAGS    = $(shell root-config --cflags)
+# rootcling mis-parses -m64 from root-config --cflags as -m (module); pass includes only.
+ROOTCLINGFLAGS = -I$(shell root-config --incdir)
 ROOTGLIBS     = $(shell root-config --glibs)
 ROOTLDFLAGS   = $(shell root-config --ldflags)
 
@@ -26,7 +32,7 @@ else
   endif
 endif
 
-CXXFLAGS      = -g -O0 -Wall -fPIC -pipe
+CXXFLAGS      = -g -O0 -Wall -fPIC -pipe -Druntime_cxxmodules=Off
 CXXFLAGS     += $(ROOTCFLAGS)
 
 LD            = $(CXX)
@@ -51,9 +57,11 @@ UTIL = util.o \
        PixelNoiseMaskFile.o \
        mu3ePlotUtils.o
 
-DICT = ${UTIL:.o=Dict.o}
-DICTHEADERS = ${UTIL:.o=Dict.h}
-DICTSOURCES = ${UTIL:.o=Dict.cc}
+# Dictionaries: util.hh (free functions) + classes with ClassDef (each needs *LinkDef.h).
+DICTUTILS = util numpy initFunc plotClass PidData PidTable PixelNoiseMaskFile HistCutEfficiency
+DICT = $(addsuffix Dict.o,$(DICTUTILS))
+DICTSOURCES = $(addsuffix Dict.cc,$(DICTUTILS))
+.SECONDARY: $(DICTSOURCES)
 
 
 # -- Default rules
@@ -63,13 +71,11 @@ $(addprefix obj/,%.o) : %.cc %.hh
 $(addprefix obj/,%.o) : %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Classic ROOT dictionaries (no -cxxmodule). Do not pass root-config --cflags to rootcling:
+# -m64 is parsed as -m (module dependency).
 %Dict.cc : %.hh %LinkDef.h
-	$(ROOTCINT) $@ $^
-	mv $(subst Dict.cc,Dict_rdict.pcm,$@) lib
-
-%Dict.cc : %.hh
-	$(ROOTCINT) $@  $^
-	mv $(subst Dict.cc,Dict_rdict.pcm,$@) lib
+	$(ROOTCINT) -f $@ $(ROOTCLINGFLAGS) $^
+	-[ -f $(subst Dict.cc,Dict_rdict.pcm,$@) ] && mv $(subst Dict.cc,Dict_rdict.pcm,$@) lib
 
 $(addprefix lib/,%.pcm) :
 	cd lib && ln -s $< && cd -
@@ -77,10 +83,7 @@ $(addprefix lib/,%.pcm) :
 LHOST := $(shell hostname)
 
 # -- Targets
-all: prep lib bin
-
-
-lib: $(addprefix obj/,$(UTIL)  $(DICT))
+lib: $(addprefix obj/,$(UTIL) $(DICT))
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(DICT)) -o lib/libAnaUtil.so $(GLIBS) -lMinuit
 
 LBINARIES = jpegAna serializeRootFile
@@ -117,17 +120,15 @@ testMu3eCDB: testMu3eCDB.cc
   -I /opt/homebrew/include/eigen3/ \
   -L/Users/ursl/mu3e/software/mu3e-cdb/install/lib -l mu3e_conddb -l mu3e_rec -l mu3e_util $(GLIBS)
 
-
-all:
-
 # -- create directories if not yet existing
 prep:
 	mkdir -p obj bin lib
 
 clean:
 	rm -f $(addprefix obj/,$(UTIL) $(DICT))
-	rm -f $(DICTHEADERS)
+	rm -f $(DICTSOURCES)
 	rm -rf bin/*
 	rm -f lib/*.pcm
 	rm -f lib/libAnaUtil.so
 	rm -f jpegAna
+	rm -f *Dict.cc *Dict.pcm module.modulemap
